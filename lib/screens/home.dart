@@ -26,6 +26,7 @@ class _homeScreenState extends State<homeScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        extendBody: true,
         backgroundColor: blackColor,
          body: screens[index],
          bottomNavigationBar: CurvedNavigationBar(
