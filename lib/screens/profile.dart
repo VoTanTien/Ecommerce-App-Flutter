@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:t_t_project/constants/colors.dart';
 import 'package:t_t_project/constants/image_strings.dart';
 import 'package:t_t_project/screens/edit_profile.dart';
+import 'package:t_t_project/screens/history.dart';
 import 'package:t_t_project/screens/loginscreens/login.dart';
 
 class profileScreen extends StatefulWidget {
@@ -86,7 +87,9 @@ class _profileScreenState extends State<profileScreen> {
                         ),
                         trailing: Icon(Icons.arrow_forward_ios_rounded, color: Colors.white,),
                         leading: Icon(Icons.history, color: Colors.white,),
-                        onTap: (){},
+                        onTap: (){
+                          Navigator.push(context, MaterialPageRoute(builder: (cntext) => History()));
+                        },
                       ),
                       ListTile(
                         title: Text('Liked',
