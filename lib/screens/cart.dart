@@ -6,6 +6,7 @@ import 'package:t_t_project/common_widget/cart_item.dart';
 import 'package:t_t_project/constants/colors.dart';
 import 'package:t_t_project/constants/image_strings.dart';
 import 'package:input_quantity/input_quantity.dart';
+import 'package:t_t_project/screens/order.dart';
 
 
 class cartScreen extends StatefulWidget {
@@ -157,6 +158,7 @@ class _cartScreenState extends State<cartScreen> {
                             ),
                           ),
                           onPressed: () {
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => orderScreen()));
                           },
                           child: Text(
                             'Buy now',

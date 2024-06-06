@@ -206,7 +206,7 @@ class _searchScreenState extends State<searchScreen> {
                                 fontWeight: FontWeight.w600),
                           ),
                         ),
-                        SizedBox(width: 50),
+                        SizedBox(width: 40),
                         ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             padding:
@@ -251,7 +251,7 @@ class _searchScreenState extends State<searchScreen> {
                 children: [
                   SizedBox(
                     height: 55,
-                    width: size.width * 0.81,
+                    width: size.width * 0.78,
                     child: CupertinoSearchTextField(
                       controller: textSearch,
                       style: TextStyle(color: Colors.white),
@@ -298,7 +298,7 @@ class _searchScreenState extends State<searchScreen> {
                       child: Text(
                         'Related',
                         style: GoogleFonts.inter(
-                            fontSize: 14,
+                            fontSize: 12,
                             color: Colors.white,
                             fontWeight: FontWeight.w600),
                       ),
@@ -328,7 +328,7 @@ class _searchScreenState extends State<searchScreen> {
                       child: Text(
                         'Newest',
                         style: GoogleFonts.inter(
-                            fontSize: 14,
+                            fontSize: 12,
                             color: Colors.white,
                             fontWeight: FontWeight.w600),
                       ),
@@ -357,7 +357,7 @@ class _searchScreenState extends State<searchScreen> {
                       child: Text(
                         'Best Selling',
                         style: GoogleFonts.inter(
-                            fontSize: 14,
+                            fontSize: 12,
                             color: Colors.white,
                             fontWeight: FontWeight.w600),
                       ),
@@ -384,7 +384,7 @@ class _searchScreenState extends State<searchScreen> {
                       child: Text(
                         'Price',
                         style: GoogleFonts.inter(
-                            fontSize: 14,
+                            fontSize: 12,
                             color: Colors.white,
                             fontWeight: FontWeight.w600),
                       ),
@@ -394,7 +394,7 @@ class _searchScreenState extends State<searchScreen> {
                           ? Icons.keyboard_arrow_down
                           : Icons.keyboard_arrow_up,
                       color: Colors.white,
-                      size: 30,
+                      size: 25,
                     )
                   ],
                 ),

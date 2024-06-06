@@ -88,7 +88,7 @@ class _profileScreenState extends State<profileScreen> {
                         trailing: Icon(Icons.arrow_forward_ios_rounded, color: Colors.white,),
                         leading: Icon(Icons.history, color: Colors.white,),
                         onTap: (){
-                          Navigator.push(context, MaterialPageRoute(builder: (cntext) => History()));
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => History()));
                         },
                       ),
                       ListTile(
