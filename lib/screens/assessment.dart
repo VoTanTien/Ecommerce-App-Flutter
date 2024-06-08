@@ -1,28 +1,23 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:t_t_project/common_widget/history_product.dart';
+import 'package:t_t_project/common_widget/assessment_product.dart';
 import 'package:t_t_project/constants/colors.dart';
 import 'package:t_t_project/constants/image_strings.dart';
 
-class History extends StatefulWidget {
-  const History({super.key});
-
+class assessmentScreen extends StatefulWidget{
   @override
-  State<History> createState() => _HistoryState();
+  State<assessmentScreen> createState() => _assessmentScreenState();
 }
 
-class _HistoryState extends State<History> {
+class _assessmentScreenState extends State<assessmentScreen> {
   bool isClickDown = true;
-
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        backgroundColor: blackColor,
         appBar: AppBar(
-          title: Text('History Of Purchases',
+          title: Text('My Assessment',
               style: GoogleFonts.inter(
                   fontSize: 26,
                   color: Colors.white,
@@ -33,9 +28,12 @@ class _HistoryState extends State<History> {
             color: Colors.white,
           ),
         ),
-        body: Padding(
-          padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+        body: Container(
+          color: blackColor,
+          height: double.infinity,
+          width: double.infinity,
           child: SingleChildScrollView(
+            padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
             child: Column(
               children: [
                 IntrinsicHeight(
@@ -44,7 +42,7 @@ class _HistoryState extends State<History> {
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           padding:
-                              EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                          EdgeInsets.symmetric(vertical: 5, horizontal: 10),
                           backgroundColor: redColor,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),
@@ -102,13 +100,12 @@ class _HistoryState extends State<History> {
                   spacing: 0,
                   runSpacing: 10,
                   children: List.generate(
-                    5, (index) => HistoryItem(
-                        subimage: AssetImage(lt4s),
-                        price: 1000,
-                        option: 'White',
-                        title: 'Laptop ASUS Zenbook 14 OLED UX3402VA KM085W',
-                        quantity: 1,
-                        pay: 1000),
+                    4, (index) => AssessmentItem(
+                      subimage: AssetImage(lt4s),
+                      price: 1000,
+                      option: 'White',
+                      title: 'Laptop ASUS Zenbook 14 OLED UX3402VA KM085W',
+                  ),
                   ),
                 ),
               ],

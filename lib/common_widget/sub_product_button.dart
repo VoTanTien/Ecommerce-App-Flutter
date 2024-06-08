@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:t_t_project/constants/colors.dart';
 import 'package:t_t_project/constants/image_strings.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:t_t_project/screens/product_detail.dart';
 
 class SubProductButton extends StatelessWidget {
   final subimage;
@@ -22,7 +23,9 @@ class SubProductButton extends StatelessWidget {
           color: Colors.white, borderRadius: BorderRadius.circular(15)),
       padding: EdgeInsets.all(10),
       child: InkWell(
-        onTap: () {},
+        onTap: () {
+          Navigator.push(context, MaterialPageRoute(builder: (context) => productDetailScreen()));
+        },
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

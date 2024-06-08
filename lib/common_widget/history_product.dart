@@ -83,7 +83,7 @@ class HistoryItem extends StatelessWidget{
                     ),
                     Padding(
                       padding: const EdgeInsets.fromLTRB(17, 0, 0, 0),
-                      child: Divider(color: Colors.white, height: 10, thickness: 3,),
+                      child: Divider(color: Colors.white, height: 10, thickness: 2,),
 
                     ),
                     Padding(

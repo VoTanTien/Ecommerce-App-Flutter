@@ -4,8 +4,11 @@ import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:t_t_project/constants/colors.dart';
 import 'package:t_t_project/constants/image_strings.dart';
+import 'package:t_t_project/screens/assessment.dart';
 import 'package:t_t_project/screens/edit_profile.dart';
 import 'package:t_t_project/screens/history.dart';
+import 'package:t_t_project/screens/liked.dart';
+import 'package:t_t_project/screens/loginscreens/enter_email.dart';
 import 'package:t_t_project/screens/loginscreens/login.dart';
 
 class profileScreen extends StatefulWidget {
@@ -99,7 +102,9 @@ class _profileScreenState extends State<profileScreen> {
                         ),
                         trailing: Icon(Icons.arrow_forward_ios_rounded, color: Colors.white,),
                         leading: Icon(Icons.favorite_border_outlined, color: Colors.white,),
-                        onTap: (){},
+                        onTap: (){
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => likedScreen()));
+                        },
                       ),
                       ListTile(
                         title: Text('My assessment',
@@ -109,7 +114,9 @@ class _profileScreenState extends State<profileScreen> {
                         ),
                         trailing: Icon(Icons.arrow_forward_ios_rounded, color: Colors.white,),
                         leading: Icon(Icons.star_border_outlined, color: Colors.white,),
-                        onTap: (){},
+                        onTap: (){
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => assessmentScreen()));
+                        },
                       ),
                       ListTile(
                         title: Text('Change password',
@@ -119,7 +126,9 @@ class _profileScreenState extends State<profileScreen> {
                         ),
                         trailing: Icon(Icons.arrow_forward_ios_rounded, color: Colors.white,),
                         leading: Icon(Icons.change_circle_outlined, color: Colors.white,),
-                        onTap: (){},
+                        onTap: (){
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => enterEmailScreen()));
+                        },
                       ),
 
                       ListTile(
