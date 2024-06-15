@@ -19,12 +19,14 @@ class _AddressItemState extends State<AddressItem> {
   var _phone;
   var _address;
   var _isDefault;
+
   @override
   void initState() {
     _name = widget.name;
     _phone = widget.phone;
     _address = widget.address;
     _isDefault= widget.isDefault;
+    isChecked = _isDefault;
   }
 
   @override
@@ -77,7 +79,7 @@ class _AddressItemState extends State<AddressItem> {
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
               side: BorderSide(color: Colors.white, width: 2),
               activeColor: redColor,
-              value: _isDefault ? !isChecked : isChecked,
+              value: isChecked,
               onChanged:(bool? value){
                 setState(() {
                   isChecked = value!;

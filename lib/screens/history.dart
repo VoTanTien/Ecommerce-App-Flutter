@@ -5,6 +5,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:t_t_project/common_widget/history_product.dart';
 import 'package:t_t_project/constants/colors.dart';
 import 'package:t_t_project/constants/image_strings.dart';
+import 'package:t_t_project/objects/product_manager.dart';
+import 'package:t_t_project/screens/product_detail.dart';
 
 class History extends StatefulWidget {
   const History({super.key});
@@ -14,8 +16,9 @@ class History extends StatefulWidget {
 }
 
 class _HistoryState extends State<History> {
+  late int a;
   bool isClickDown = true;
-
+  ProductManager productManager = ProductManager();
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -101,15 +104,18 @@ class _HistoryState extends State<History> {
                 Wrap(
                   spacing: 0,
                   runSpacing: 10,
-                  children: List.generate(
-                    5, (index) => HistoryItem(
-                        subimage: AssetImage(lt4s),
-                        price: 1000,
-                        option: 'White',
-                        title: 'Laptop ASUS Zenbook 14 OLED UX3402VA KM085W',
-                        quantity: 1,
-                        pay: 1000),
-                  ),
+                  children: productManager.products.map((e) {
+                    a = 0;
+                    a = e.discountPrice ?? e.price;
+                    return HistoryItem(
+                        subimage: e.image,
+                        price: a,
+                        option: e.option,
+                        title: e.title,
+                        quantity: e.quantity,
+                        pay: e.quantity! * a,
+                    );
+                  }).toList()
                 ),
               ],
             ),

@@ -4,11 +4,14 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:t_t_project/common_widget/review_item.dart';
 import 'package:t_t_project/constants/colors.dart';
+import 'package:t_t_project/objects/comment_manager.dart';
 import 'package:t_t_project/screens/product_detail.dart';
 
-class reviewScreen extends StatelessWidget{
+class reviewScreen extends StatelessWidget {
   double initRating = 4.0;
   int countReview = 20;
+  CommentManager commentManager = CommentManager();
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -41,7 +44,8 @@ class reviewScreen extends StatelessWidget{
                       style: GoogleFonts.inter(
                         fontSize: 30,
                         fontWeight: FontWeight.w700,
-                        color: Colors.white,),
+                        color: Colors.white,
+                      ),
                     ),
                     RatingBar(
                       itemSize: 20,
@@ -70,21 +74,24 @@ class reviewScreen extends StatelessWidget{
                       style: GoogleFonts.inter(
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
-                        color: Colors.white,),
+                        color: Colors.white,
+                      ),
                     ),
                   ],
                 ),
                 Wrap(
-                  spacing: 0,
-                  runSpacing: 5,
-                  children: List.generate(6, (index) => ReviewItem(
-                    user: 'VoTanTien',
-                    initRating: initRating,
-                    title: 'Nice product and very good quality',
-                    image: null,
-                  ),
-                  ),
-                ),
+                    spacing: 0,
+                    runSpacing: 5,
+                    children: commentManager.comments
+                        .map(
+                          (e) => ReviewItem(
+                            user: e.name,
+                            initRating: e.rate,
+                            title: e.title,
+                            image: e.image,
+                          ),
+                        )
+                        .toList()),
               ],
             ),
           ),
@@ -92,5 +99,4 @@ class reviewScreen extends StatelessWidget{
       ),
     );
   }
-
 }

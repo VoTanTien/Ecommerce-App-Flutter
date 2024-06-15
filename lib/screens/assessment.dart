@@ -4,6 +4,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:t_t_project/common_widget/assessment_product.dart';
 import 'package:t_t_project/constants/colors.dart';
 import 'package:t_t_project/constants/image_strings.dart';
+import 'package:t_t_project/objects/product_manager.dart';
+import 'package:t_t_project/screens/product_detail.dart';
 
 class assessmentScreen extends StatefulWidget{
   @override
@@ -12,6 +14,7 @@ class assessmentScreen extends StatefulWidget{
 
 class _assessmentScreenState extends State<assessmentScreen> {
   bool isClickDown = true;
+  ProductManager productManager = ProductManager();
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -99,14 +102,14 @@ class _assessmentScreenState extends State<assessmentScreen> {
                 Wrap(
                   spacing: 0,
                   runSpacing: 10,
-                  children: List.generate(
-                    4, (index) => AssessmentItem(
-                      subimage: AssetImage(lt4s),
-                      price: 1000,
-                      option: 'White',
-                      title: 'Laptop ASUS Zenbook 14 OLED UX3402VA KM085W',
-                  ),
-                  ),
+                  children: productManager.products.take(3).map((e) {
+                    return AssessmentItem(
+                      subimage: e.image,
+                      price: e.discountPrice ?? e.price,
+                      option: e.option,
+                      title: e.title,
+                    );
+                  }).toList()
                 ),
               ],
             ),

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:t_t_project/constants/colors.dart';
+import 'package:t_t_project/screens/product_detail.dart';
 
 class HistoryItem extends StatelessWidget{
   final subimage;
@@ -126,6 +127,7 @@ class HistoryItem extends StatelessWidget{
               ),
             ),
             onPressed: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => productDetailScreen()));
             },
             child: Text(
               'Buy back',

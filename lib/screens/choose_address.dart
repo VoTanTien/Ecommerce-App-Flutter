@@ -3,7 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:t_t_project/common_widget/address_item.dart';
 import 'package:t_t_project/constants/colors.dart';
+import 'package:t_t_project/objects/address.dart';
+import 'package:t_t_project/objects/address_manager.dart';
 import 'package:t_t_project/screens/new_address.dart';
+
+
 
 class AddressScreen extends StatefulWidget{
   @override
@@ -11,6 +15,15 @@ class AddressScreen extends StatefulWidget{
 }
 
 class _AddressScreenState extends State<AddressScreen> {
+  AddressManager addressManager = AddressManager();
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    setState(() {
+      addressManager = new AddressManager();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,14 +53,13 @@ class _AddressScreenState extends State<AddressScreen> {
                   Wrap(
                     spacing: 0,
                     runSpacing: 10,
-                    children: List.generate(
-                      3, (index) => AddressItem(
-                      name: 'Vo Tan Tien',
-                      phone: '0379743117',
-                      address: 'Street A, District 7, Ho Chi Minh City',
-                      isDefault: true,
+                    children: addressManager.addresses.map((e) => AddressItem(
+                      name: e.name,
+                      phone: e.phone,
+                      address: e.address,
+                      isDefault: e.isDefault,
                     ),
-                    ),
+                    ).toList()
                   ),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(

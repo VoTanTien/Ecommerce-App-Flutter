@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:t_t_project/constants/colors.dart';
+import 'package:t_t_project/objects/address.dart';
+import 'package:t_t_project/objects/address_manager.dart';
 
 class NewAddress extends StatefulWidget{
   @override
@@ -11,6 +13,10 @@ class NewAddress extends StatefulWidget{
 
 class _NewAddressState extends State<NewAddress> {
   bool isSwitched = false;
+  final nameControler = TextEditingController();
+  final phoneControler = TextEditingController();
+  final addressControler = TextEditingController();
+  AddressManager addressManager = AddressManager();
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -45,6 +51,7 @@ class _NewAddressState extends State<NewAddress> {
               ),
               TextFormField(
                 cursorColor: Colors.white,
+                controller: nameControler,
                 style: TextStyle(fontSize: 16, color: Colors.white),
                 decoration: InputDecoration(
                   enabledBorder: OutlineInputBorder(
@@ -65,6 +72,7 @@ class _NewAddressState extends State<NewAddress> {
               ),
               TextFormField(
                 cursorColor: Colors.white,
+                controller: phoneControler,
                 style: TextStyle(fontSize: 16, color: Colors.white),
                 decoration: InputDecoration(
                   enabledBorder: OutlineInputBorder(
@@ -95,6 +103,7 @@ class _NewAddressState extends State<NewAddress> {
               ),
               TextFormField(
                 cursorColor: Colors.white,
+                controller: addressControler,
                 style: TextStyle(fontSize: 16, color: Colors.white),
                 decoration: InputDecoration(
                   enabledBorder: OutlineInputBorder(
@@ -148,7 +157,10 @@ class _NewAddressState extends State<NewAddress> {
                         borderRadius: BorderRadius.circular(15),
                       ),
                     ),
-                    onPressed: () {},
+                    onPressed: () {
+                      addressManager.addAddress(Address(nameControler.text, phoneControler.text, addressControler.text, false));
+                      Navigator.pop(context);
+                    },
                     child: Text(
                       'COMPLETE',
                       style: GoogleFonts.inter(

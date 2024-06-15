@@ -10,26 +10,45 @@ import 'package:t_t_project/common_widget/sub_product_button.dart';
 import 'package:t_t_project/common_widget/technical_parameter.dart';
 import 'package:t_t_project/constants/colors.dart';
 import 'package:t_t_project/constants/image_strings.dart';
+import 'package:t_t_project/objects/comment_manager.dart';
+import 'package:t_t_project/objects/parameters.dart';
+import 'package:t_t_project/objects/product_manager.dart';
+import 'package:t_t_project/screens/cart.dart';
 import 'package:t_t_project/screens/list_reviews.dart';
 import 'package:t_t_project/screens/order.dart';
 
 var image = AssetImage(lt4);
 var subimage = AssetImage(lt4s);
-var title = 'Laptop ASUS Zenbook 14 OLED UX3402VA KM085W';
+var title = 'Laptop ASUS VivoBook Pro 16X OLED N7600ZE L2010W';
 var option = 'White';
 var description = 'Logitech G733 LIGHTSPEED Wireless White line of computer headsets is designed with gamers in mind. These are wireless headphones packed with the stereophonic sound, sound filters, and advanced lighting features you need to look, speak, and play in style like never before.';
-var price = 1000;
-var discountPrice = 999;
+var price = 1200;
+var discountPrice = 1000;
 bool isLiked = false;
 double initRating = 4.0;
 int countReview = 20;
 int quantity = 1;
+CommentManager commentManager = CommentManager();
+ProductManager productManager = ProductManager();
+
 class productDetailScreen extends StatefulWidget{
   @override
   State<productDetailScreen> createState() => _productDetailScreenState();
 }
 
 class _productDetailScreenState extends State<productDetailScreen> {
+
+  List<Parameter> listpara = [];
+  initState(){
+    listpara.add(Parameter('CPU', 'Intel Core i7-12700H 2.3GHz up to 4.7GHz 24MB'));
+    listpara.add(Parameter('Graphic_card', 'NVIDIA GeForce RTX 3050Ti 4GB GDDR6'));
+    listpara.add(Parameter('RAM', '16GB Onboard LPDDR5'));
+    listpara.add(Parameter('Storage', '1TB M.2 NVMe PCIe 4.0 Performance SSD (1 slot)'));
+    listpara.add(Parameter('Screen', '16 inch 4K (3840 x 2400) OLED 16:10 aspect ratio'));
+    listpara.add(Parameter('Battery', '6 Cells 96WHrs'));
+    listpara.add(Parameter('Communication', '1x Thunderbolt 4 supports display / power delivery'));
+    listpara.add(Parameter('Color', 'Cool Silver Aluminum'));
+  }
 
   _displayBottomSheet(int role){
     showModalBottomSheet(
@@ -148,6 +167,7 @@ class _productDetailScreenState extends State<productDetailScreen> {
     }
     );
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -283,11 +303,11 @@ class _productDetailScreenState extends State<productDetailScreen> {
                             child:Wrap(
                               spacing: 0,
                               runSpacing: 5,
-                              children: List.generate(4, (index) => Parameters(
-                                subtitle: '1TB M.2 NVMe PCIe 4.0 Performance SSD (1 slot)',
-                                title: 'Storage_drive',
+                              children: listpara.map((e) => Parameters(
+                                title: e.title,
+                                subtitle: e.detail,
                               ),
-                              ),
+                              ).toList()
                             ),
                           ),
                           Divider(color: Colors.white, thickness: 1, height: 20,),
@@ -451,13 +471,13 @@ class Reviews extends StatelessWidget{
         Wrap(
           spacing: 0,
           runSpacing: 5,
-          children: List.generate(2, (index) => ReviewItem(
-            user: 'VoTanTien',
-            initRating: initRating,
-            title: 'Nice product and very good quality',
-            image: null,
+          children: commentManager.comments.take(2).map((e) => ReviewItem(
+            user: e.name,
+            initRating: e.rate,
+            title: e.title,
+            image: e.image,
           ),
-          ),
+          ).toList()
         ),
         ListTile(
           titleAlignment: ListTileTitleAlignment.center,
@@ -496,14 +516,15 @@ class SimilarProduct extends StatelessWidget{
         Wrap(
           spacing: 15,
           runSpacing: 10,
-          children: List.generate(4, (index) => SubProductButton(
-            subimage: AssetImage(lt1s),
-            title: 'Laptop ASUS Vivobook 15 X1502ZA BQ127W',
-            rating: 4,
-            price: 1000,
-            discountPrice: 999,
-          ),
-          ),
+          children: productManager.products.map((e) =>
+              SubProductButton(
+                subimage: e.image,
+                title: e.title,
+                rating: 5,
+                price: e.price,
+                discountPrice: e.discountPrice,
+              ),
+          ).toList()
         ),
       ],
     );
