@@ -6,6 +6,7 @@ import 'package:t_t_project/common_widget/cart_item.dart';
 import 'package:t_t_project/constants/colors.dart';
 import 'package:t_t_project/constants/image_strings.dart';
 import 'package:input_quantity/input_quantity.dart';
+import 'package:t_t_project/objects/product_manager.dart';
 import 'package:t_t_project/screens/order.dart';
 
 
@@ -16,6 +17,7 @@ class cartScreen extends StatefulWidget {
 
 class _cartScreenState extends State<cartScreen> {
   bool isCheckedAll = false;
+  ProductManager productManager = ProductManager();
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -82,15 +84,14 @@ class _cartScreenState extends State<cartScreen> {
                   child: Wrap(
                     spacing: 0,
                     runSpacing: 10,
-                    children: List.generate(
-                      5, (index) => CartItem(
-                      subimage: AssetImage(lt4s),
-                      title: 'Laptop ASUS Zenbook 14 OLED UX3402VA KM085W',
-                      option: 'White',
-                      price: 1000,
-                      quantity: 2,
-                    ),
-                    ),
+                    children: productManager.products.take(3).map((e) {
+                      return CartItem(
+                          subimage: e.image,
+                          price: e.discountPrice ?? e.price,
+                          option: e.option,
+                          title: e.title,
+                          quantity: e.quantity);
+                    }).toList()
                   ),
                 ),
               ),
@@ -129,24 +130,24 @@ class _cartScreenState extends State<cartScreen> {
                     ),
                     Row(
                       children: [
-                        Column(
-                          children: [
-                            Text(
-                              'Total Price:',
-                              style: GoogleFonts.inter(
-                                  fontSize: 12,
-                                  color: greyColor,
-                                  fontWeight: FontWeight.w500),
-                            ),
-                            Text(
-                              '\$ 1000',
-                              style: GoogleFonts.inter(
-                                  fontSize: 15,
-                                  color: redColor,
-                                  fontWeight: FontWeight.w600),
-                            ),
-                          ],
-                        ),
+                        // Column(
+                        //   children: [
+                        //     Text(
+                        //       'Total Price:',
+                        //       style: GoogleFonts.inter(
+                        //           fontSize: 12,
+                        //           color: greyColor,
+                        //           fontWeight: FontWeight.w500),
+                        //     ),
+                        //     Text(
+                        //       '\$ 1000',
+                        //       style: GoogleFonts.inter(
+                        //           fontSize: 15,
+                        //           color: redColor,
+                        //           fontWeight: FontWeight.w600),
+                        //     ),
+                        //   ],
+                        // ),
                         SizedBox(width: 10,),
                         ElevatedButton(
                           style: ElevatedButton.styleFrom(

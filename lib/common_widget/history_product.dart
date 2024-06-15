@@ -21,7 +21,9 @@ class HistoryItem extends StatelessWidget{
         Container(
           width: double.infinity,
           child: InkWell(
-            onTap: (){},
+            onTap: (){
+              Navigator.push(context, MaterialPageRoute(builder: (context) => productDetailScreen()));
+            },
             child: Card(
               color: greyColor,
               shape: RoundedRectangleBorder(
@@ -114,30 +116,30 @@ class HistoryItem extends StatelessWidget{
             ),
           ),
         ),
-        Positioned(
-          right: 25,
-          top: 130,
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              padding:
-              EdgeInsets.symmetric(vertical: 5, horizontal: 30),
-              backgroundColor: redColor,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
-            onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => productDetailScreen()));
-            },
-            child: Text(
-              'Buy back',
-              style: GoogleFonts.inter(
-                  fontSize: 14,
-                  color: Colors.white,
-                  fontWeight: FontWeight.w600),
-            ),
-          ),
-        ),
+        // Positioned(
+        //   right: 25,
+        //   top: 130,
+        //   child: ElevatedButton(
+        //     style: ElevatedButton.styleFrom(
+        //       padding:
+        //       EdgeInsets.symmetric(vertical: 5, horizontal: 30),
+        //       backgroundColor: redColor,
+        //       shape: RoundedRectangleBorder(
+        //         borderRadius: BorderRadius.circular(8),
+        //       ),
+        //     ),
+        //     onPressed: () {
+        //       Navigator.push(context, MaterialPageRoute(builder: (context) => productDetailScreen()));
+        //     },
+        //     child: Text(
+        //       'Buy back',
+        //       style: GoogleFonts.inter(
+        //           fontSize: 14,
+        //           color: Colors.white,
+        //           fontWeight: FontWeight.w600),
+        //     ),
+        //   ),
+        // ),
       ],
     );
   }

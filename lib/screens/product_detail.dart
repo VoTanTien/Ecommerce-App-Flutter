@@ -39,7 +39,9 @@ class productDetailScreen extends StatefulWidget{
 class _productDetailScreenState extends State<productDetailScreen> {
 
   List<Parameter> listpara = [];
-  initState(){
+  @override
+  void initState() {
+    super.initState();
     listpara.add(Parameter('CPU', 'Intel Core i7-12700H 2.3GHz up to 4.7GHz 24MB'));
     listpara.add(Parameter('Graphic_card', 'NVIDIA GeForce RTX 3050Ti 4GB GDDR6'));
     listpara.add(Parameter('RAM', '16GB Onboard LPDDR5'));
@@ -330,8 +332,8 @@ class _productDetailScreenState extends State<productDetailScreen> {
                           ),
                           Divider(color: Colors.white, thickness: 1, height: 20,),
                           Reviews(),
-                          Divider(color: Colors.white, thickness: 1, height: 20,),
-                          SimilarProduct(),
+                          // Divider(color: Colors.white, thickness: 1, height: 20,),
+                          // SimilarProduct(),
                         ],
                       ),
                     )

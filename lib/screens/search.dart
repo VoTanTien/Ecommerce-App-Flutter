@@ -6,6 +6,7 @@ import 'package:t_t_project/common_widget/filter_button.dart';
 import 'package:t_t_project/common_widget/sub_product_button.dart';
 import 'package:t_t_project/constants/colors.dart';
 import 'package:t_t_project/constants/image_strings.dart';
+import 'package:t_t_project/objects/product_manager.dart';
 
 class searchScreen extends StatefulWidget {
   @override
@@ -18,6 +19,23 @@ class _searchScreenState extends State<searchScreen> {
   bool isClickNewest = false;
   bool isClickBest = false;
   bool isClickDown = true;
+  bool _showListItem = false;
+  ProductManager productManager = ProductManager();
+
+  List<String> brands = [];
+  List<String> productType = [];
+  @override
+  void initState() {
+    super.initState(); // Gọi super.initState() trước
+    brands.add('Asus');
+    brands.add('MSI');
+    brands.add('Dell');
+    brands.add('Apple');
+    productType.add('Laptop');
+    productType.add('Mouse');
+    productType.add('Headphone');
+    productType.add('Keyboard');
+  }
 
   _displayBottomSheet()  {
     RangeValues values = const RangeValues(0, 10000);
@@ -68,10 +86,7 @@ class _searchScreenState extends State<searchScreen> {
                     Wrap(
                       spacing: 10,
                       runSpacing: 10,
-                      children: List.generate(
-                        6,
-                        (index) => FilterButton(content: 'Asus'),
-                      ),
+                      children: brands.map((e) =>  FilterButton(content: e)).toList()
                     ),
                     SizedBox(
                       height: 5,
@@ -86,32 +101,31 @@ class _searchScreenState extends State<searchScreen> {
                     Wrap(
                       spacing: 15,
                       runSpacing: 10,
-                      children: List.generate(
-                        4,
-                        (index) => FilterButton(content: 'Laptop'),
-                      ),
+                      children: productType.map((e) =>
+                          FilterButton(content: e)
+                      ).toList(),
                     ),
                     SizedBox(
                       height: 5,
                     ),
-                    Text(
-                      'State',
-                      style: GoogleFonts.inter(
-                          fontSize: 16,
-                          color: Colors.black,
-                          fontWeight: FontWeight.w600),
-                    ),
-                    Wrap(
-                      spacing: 10,
-                      runSpacing: 10,
-                      children: List.generate(
-                        3,
-                        (index) => FilterButton(content: 'New'),
-                      ),
-                    ),
-                    SizedBox(
-                      height: 5,
-                    ),
+                    // Text(
+                    //   'State',
+                    //   style: GoogleFonts.inter(
+                    //       fontSize: 16,
+                    //       color: Colors.black,
+                    //       fontWeight: FontWeight.w600),
+                    // ),
+                    // Wrap(
+                    //   spacing: 10,
+                    //   runSpacing: 10,
+                    //   children: List.generate(
+                    //     3,
+                    //     (index) => FilterButton(content: 'New'),
+                    //   ),
+                    // ),
+                    // SizedBox(
+                    //   height: 5,
+                    // ),
                     Text(
                       'Price',
                       style: GoogleFonts.inter(
@@ -217,6 +231,10 @@ class _searchScreenState extends State<searchScreen> {
                             ),
                           ),
                           onPressed: () {
+                            setState(() {
+                              _showListItem = true;
+                            });
+                            Navigator.pop(context);
                           },
                           child: Text(
                             'Apply',
@@ -402,19 +420,20 @@ class _searchScreenState extends State<searchScreen> {
               SizedBox(
                 height: 30,
               ),
+              //List Item
+              if(_showListItem)
               Wrap(
                 spacing: 15,
                 runSpacing: 20,
-                children: List.generate(
-                  6,
-                  (index) => SubProductButton(
-                    subimage: AssetImage(lt3s),
-                    title: 'Laptop ASUS Zenbook 14 OLED UX3402VA KM085W',
-                    rating: 5,
-                    price: 1200,
-                    discountPrice: null,
-                  ),
-                ),
+                children: productManager.products.map((e) =>
+                    SubProductButton(
+                      subimage: e.image,
+                      title: e.title,
+                      rating: 4,
+                      price: e.price,
+                      discountPrice: e.discountPrice,
+                    ),
+                ).toList()
               ),
             ],
           ),

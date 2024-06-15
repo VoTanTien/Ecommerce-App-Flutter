@@ -61,6 +61,7 @@ class _editProfileScreenState extends State<editProfileScreen> {
               ),
               TextFormField(
                 cursorColor: Colors.white,
+                initialValue: 'Vo Tan Tien',
                 style: TextStyle(fontSize: 20, color: Colors.white),
                 decoration: InputDecoration(
                   enabledBorder: OutlineInputBorder(
@@ -79,6 +80,7 @@ class _editProfileScreenState extends State<editProfileScreen> {
               ),
               TextFormField(
                 cursorColor: Colors.white,
+                initialValue: 'votien040302@gmail.com',
                 style: TextStyle(fontSize: 20, color: Colors.white),
                 decoration: InputDecoration(
                   enabledBorder: OutlineInputBorder(
@@ -97,6 +99,7 @@ class _editProfileScreenState extends State<editProfileScreen> {
               ),
               TextFormField(
                 cursorColor: Colors.white,
+                initialValue: '0379743117',
                 style: TextStyle(fontSize: 20, color: Colors.white),
                 decoration: InputDecoration(
                   enabledBorder: OutlineInputBorder(
@@ -115,6 +118,7 @@ class _editProfileScreenState extends State<editProfileScreen> {
               ),
               TextFormField(
                 cursorColor: Colors.white,
+                initialValue: '123 Street A, District 1, Ho Chi Minh City',
                 style: TextStyle(fontSize: 20, color: Colors.white),
                 decoration: InputDecoration(
                   enabledBorder: OutlineInputBorder(
@@ -133,6 +137,7 @@ class _editProfileScreenState extends State<editProfileScreen> {
               ),
               TextFormField(
                 cursorColor: Colors.white,
+                initialValue: 'tienpro1234',
                 style: TextStyle(fontSize: 20, color: Colors.white),
                 decoration: InputDecoration(
                   enabledBorder: OutlineInputBorder(
@@ -158,7 +163,9 @@ class _editProfileScreenState extends State<editProfileScreen> {
                       borderRadius: BorderRadius.circular(18),
                     ),
                   ),
-                  onPressed: () {},
+                  onPressed: () {
+
+                  },
                   child: Text(
                     'Complete',
                     style: GoogleFonts.inter(

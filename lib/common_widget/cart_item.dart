@@ -119,7 +119,7 @@ class _CartItemState extends State<CartItem> {
             ),
             maxVal: 100,
             initVal: _quantity,
-            minVal: 0,
+            minVal: 1,
             steps: 1,
             onQtyChanged: (val) {
             },
