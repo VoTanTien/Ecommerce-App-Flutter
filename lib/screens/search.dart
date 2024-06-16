@@ -21,6 +21,8 @@ class _searchScreenState extends State<searchScreen> {
   bool isClickDown = true;
   bool _showListItem = false;
   ProductManager productManager = ProductManager();
+  final TextEditingController _textController = TextEditingController();
+  final FocusNode _focusNode = FocusNode();
 
   List<String> brands = [];
   List<String> productType = [];
@@ -35,6 +37,30 @@ class _searchScreenState extends State<searchScreen> {
     productType.add('Mouse');
     productType.add('Headphone');
     productType.add('Keyboard');
+    _focusNode.addListener(_onFocusChange);
+  }
+
+  @override
+  void dispose() {
+    _focusNode.removeListener(_onFocusChange);
+    _focusNode.dispose();
+    _textController.dispose();
+    super.dispose();
+  }
+
+  void _onFocusChange() {
+    if (!_focusNode.hasFocus) {
+      _checkAndShowListItem();
+    }
+  }
+
+  void _checkAndShowListItem() {
+    String val = _textController.text.trim(); // Loại bỏ khoảng trắng
+    if (val.toLowerCase() == 'laptop') {
+      setState(() {
+        _showListItem = true;
+      });
+    }
   }
 
   _displayBottomSheet()  {
@@ -45,7 +71,6 @@ class _searchScreenState extends State<searchScreen> {
         context: context,
         builder: (context) {
           final sized = MediaQuery.of(context).size;
-
           return StatefulBuilder(
             builder: (BuildContext context, StateSetter setState) {
               return Container(
@@ -211,6 +236,7 @@ class _searchScreenState extends State<searchScreen> {
                             ),
                           ),
                           onPressed: () {
+                            Navigator.pop(context);
                           },
                           child: Text(
                             'Reset',
@@ -232,9 +258,9 @@ class _searchScreenState extends State<searchScreen> {
                           ),
                           onPressed: () {
                             setState(() {
-                              _showListItem = true;
+                              Navigator.pop(context);
                             });
-                            Navigator.pop(context);
+
                           },
                           child: Text(
                             'Apply',
@@ -271,7 +297,8 @@ class _searchScreenState extends State<searchScreen> {
                     height: 55,
                     width: size.width * 0.78,
                     child: CupertinoSearchTextField(
-                      controller: textSearch,
+                      controller: _textController,
+                      focusNode: _focusNode,
                       style: TextStyle(color: Colors.white),
                       backgroundColor: Color(0xFF44484B),
                       borderRadius: BorderRadius.circular(30),

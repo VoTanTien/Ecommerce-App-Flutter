@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "128982238934",
+    "project_id": "twottech-957c4",
+    "storage_bucket": "twottech-957c4.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:128982238934:android:8225b26666eca84b25eb77",
+        "android_client_info": {
+          "package_name": "com.company.twottech"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDKQ_WxcVl6Fx2Mg0uM7iPuQ1Z0J3nxeVc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:128982238934:android:e887db8cb961df2325eb77",
+        "android_client_info": {
+          "package_name": "com.example.t_t_project"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDKQ_WxcVl6Fx2Mg0uM7iPuQ1Z0J3nxeVc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

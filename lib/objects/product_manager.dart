@@ -16,7 +16,6 @@ class ProductManager {
     Product('Laptop Asus ExpertBook B9400CEA KC1013W', 'Black' ,1000, 899, 1 , AssetImage(lt2s)),
     Product('Laptop ASUS Zenbook 14 OLED UX3402VA KM085W', 'Blue' ,1100, null, 1 , AssetImage(lt3s)),
     Product('Laptop ASUS Vivobook 15 X1502ZA BQ127WKML', 'Blue' ,849, null, 1 , AssetImage(lt1s)),
-
   ];
 
 // Thêm các phương thức để thao tác với danh sách addresses ở đây

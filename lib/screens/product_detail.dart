@@ -151,7 +151,7 @@ class _productDetailScreenState extends State<productDetailScreen> {
                             ),
                           ),
                           onPressed: () {
-
+                            Navigator.pop(context);
                           },
                           child: Text(
                             'Add to Cart',

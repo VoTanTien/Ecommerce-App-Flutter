@@ -13,7 +13,8 @@ class assessmentScreen extends StatefulWidget{
 }
 
 class _assessmentScreenState extends State<assessmentScreen> {
-  bool isClickDown = true;
+  bool isClickUnRated = true;
+  bool isClickRated = false;
   ProductManager productManager = ProductManager();
   @override
   Widget build(BuildContext context) {
@@ -46,14 +47,19 @@ class _assessmentScreenState extends State<assessmentScreen> {
                         style: ElevatedButton.styleFrom(
                           padding:
                           EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-                          backgroundColor: redColor,
+                          backgroundColor: isClickUnRated ? redColor : blackColor,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),
                           ),
                         ),
-                        onPressed: () {},
+                        onPressed: () {
+                          setState(() {
+                            isClickUnRated = true;
+                            isClickRated = false;
+                          });
+                        },
                         child: Text(
-                          'All',
+                          'Un Rated',
                           style: GoogleFonts.inter(
                               fontSize: 14,
                               color: Colors.white,
@@ -67,32 +73,28 @@ class _assessmentScreenState extends State<assessmentScreen> {
                       ),
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          padding: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
-                          backgroundColor: blackColor,
+                          padding: EdgeInsets.symmetric(
+                            vertical: 5,
+                          ),
+                          backgroundColor: isClickRated ? redColor : blackColor,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),
                           ),
                         ),
                         onPressed: () {
                           setState(() {
-                            isClickDown = !isClickDown;
+                            isClickUnRated = false;
+                            isClickRated = true;
                           });
                         },
                         child: Text(
-                          'Price',
+                          'Rated',
                           style: GoogleFonts.inter(
                               fontSize: 14,
                               color: Colors.white,
                               fontWeight: FontWeight.w600),
                         ),
                       ),
-                      Icon(
-                        isClickDown
-                            ? Icons.keyboard_arrow_down
-                            : Icons.keyboard_arrow_up,
-                        color: Colors.white,
-                        size: 30,
-                      )
                     ],
                   ),
                 ),

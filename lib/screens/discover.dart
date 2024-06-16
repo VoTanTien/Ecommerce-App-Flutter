@@ -9,6 +9,7 @@ import 'package:t_t_project/common_widget/icon_rounded_button.dart';
 import 'package:t_t_project/common_widget/sub_product_button.dart';
 import 'package:t_t_project/constants/colors.dart';
 import 'package:t_t_project/constants/image_strings.dart';
+import 'package:t_t_project/objects/product_manager1.dart';
 
 class discoverScreen extends StatefulWidget {
   @override
@@ -23,6 +24,7 @@ class _discoverScreenState extends State<discoverScreen> {
     Image.asset(ltbg3),
   ];
   int myCurrentIndex = 0;
+  ProductManager1 productManager1 =ProductManager1();
 
   @override
   Widget build(BuildContext context) {
@@ -225,14 +227,14 @@ class _discoverScreenState extends State<discoverScreen> {
                   Wrap(
                     spacing: 15,
                     runSpacing: 20,
-                    children: List.generate(6, (index) => SubProductButton(
-                      subimage: AssetImage(lt1s),
-                      title: 'Laptop ASUS Vivobook 15 X1502ZA BQ127W',
-                      rating: 4,
-                      price: 1000,
-                      discountPrice: 999,
+                    children: productManager1.products.map((e) => SubProductButton(
+                      subimage: e.image,
+                      title: e.title,
+                      rating: 4.4,
+                      price: e.price,
+                      discountPrice: e.discountPrice,
                     ),
-                    ),
+                    ).toList(),
                   ),
 
                 ],
