@@ -1,39 +1,32 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:t_t_project/constants/colors.dart';
 import 'package:t_t_project/constants/image_strings.dart';
 import 'package:input_quantity/input_quantity.dart';
 
-
+import '../objects/cart_item_data.dart';
 
 class CartItem extends StatefulWidget {
-  final subimage;
-  final title;
-  final price;
-  final option;
-  final quantity;
-  const CartItem({Key? key, required this.subimage, required this.price, required this.option, required this.title, required this.quantity }) : super(key: key) ;
+  final CartItemData cartItemData;
+  final ValueChanged<int> onQuantityChanged;
+  final ValueChanged<bool> onCartItemChecked; // Callback to parent
+  const CartItem({
+    Key? key,
+    required this.cartItemData,
+    required this.onQuantityChanged,
+    required this.onCartItemChecked,
+  }) : super(key: key);
 
   @override
   State<CartItem> createState() => _CartItemState();
 }
 
 class _CartItemState extends State<CartItem> {
-  bool isChecked = false;
-  var _subimage;
-  var _title;
-  var _price;
-  var _option;
-  var _quantity;
-  @override
-  void initState() {
-    _subimage = widget.subimage;
-    _title = widget.title;
-    _price = widget.price;
-    _option = widget.option;
-    _quantity = widget.quantity;
-  }
+
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -44,12 +37,13 @@ class _CartItemState extends State<CartItem> {
               width: 30,
               height: 30,
               child: Checkbox(
-                  value: isChecked,
+                  value: widget.cartItemData.cartProduct.isChecked,
                   side: BorderSide(color: greyColor, width: 2),
                   activeColor: Colors.red,
                   onChanged: (val) {
                     setState(() {
-                      isChecked = val!;
+                      widget.cartItemData.cartProduct.isChecked = val!;  // Access through cartItemData
+                      widget.onCartItemChecked(val);
                     });
                   }),
             ),
@@ -63,35 +57,53 @@ class _CartItemState extends State<CartItem> {
                   padding: const EdgeInsets.fromLTRB(0, 2, 12, 2),
                   child: Row(
                     children: [
-                      Image(
-                        image: _subimage,
-                        width: 110,
-                        height: 110,
+                      Padding(
+                        padding:
+                            EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                        child: ClipRRect(
+                            borderRadius: BorderRadius.circular(8.0),
+                            child: CachedNetworkImage(
+                              imageUrl: widget.cartItemData.product.image,
+                              placeholder: (context, url) =>
+                                  CircularProgressIndicator(),
+                              // Widget to show while loading
+                              errorWidget: (context, url, error) =>
+                                  Icon(Icons.error),
+                              // Widget to show if an error occurs
+                              width: 80,
+                              height: 85,
+                              fit: BoxFit.cover,
+                            )),
                       ),
                       Expanded(
                         child: Column(
-                          crossAxisAlignment:
-                          CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              _title,
+                              widget.cartItemData.product.title,
                               style: GoogleFonts.inter(
-                                  fontSize: 13,
+                                  fontSize: 16,
                                   color: Colors.white,
-                                  fontWeight: FontWeight.w400),
+                                  fontWeight: FontWeight.w500),
+                            ),
+                            SizedBox(
+                              height: 5,
                             ),
                             Text(
-                              'Color: $_option',
+                              'Option: ${widget.cartItemData.cartProduct.option}',
                               style: GoogleFonts.inter(
-                                  fontSize: 12,
+                                  fontSize: 13,
                                   color: Color(0xFFA0A0A0),
                                   fontWeight: FontWeight.w400),
                             ),
+                            SizedBox(
+                              height: 5,
+                            ),
                             Text(
-                              '\$ $_price',
+                              '\$ ${widget.cartItemData.product.discountPrice ?? widget.cartItemData.product.price}',
                               style: GoogleFonts.inter(
-                                  fontSize: 14,
+                                  fontSize: 16,
                                   color: Colors.white,
                                   fontWeight: FontWeight.w600),
                             ),
@@ -107,7 +119,7 @@ class _CartItemState extends State<CartItem> {
         ),
         Positioned(
           right: 4,
-          top: 60,
+          top: 48,
           child: InputQty(
             qtyFormProps: QtyFormProps(enableTyping: false),
             decoration: QtyDecorationProps(
@@ -115,13 +127,14 @@ class _CartItemState extends State<CartItem> {
                 fillColor: redColor,
                 btnColor: Colors.white,
                 isBordered: false,
-                width: 5
-            ),
+                width: 5),
             maxVal: 100,
-            initVal: _quantity,
+            initVal: widget.cartItemData.cartProduct.quantity,
             minVal: 1,
             steps: 1,
-            onQtyChanged: (val) {
+            onQtyChanged: (value) {
+              widget.cartItemData.cartProduct.quantity = value.toInt();
+              widget.onQuantityChanged(value.toInt());
             },
           ),
         ),

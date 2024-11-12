@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:t_t_project/screens/choose_address.dart';
 import 'package:t_t_project/screens/home.dart';
@@ -9,28 +10,48 @@ import 'package:t_t_project/screens/order.dart';
 import 'package:t_t_project/screens/product_detail.dart';
 import 'package:t_t_project/screens/success.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:t_t_project/services/auth_service.dart';
 import 'firebase_options.dart';
 
 
-void main() async{
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp( MaterialApp(
-    home: SafeArea(
-      child: startScreen(),
-    ),debugShowCheckedModeBanner: false,
-  ));
+  runApp(
+    MaterialApp(
+      home: SafeArea(
+        // If there is a signed-in user, navigate to HomeScreen, otherwise to StartScreen
+        child: StreamBuilder(
+            stream: AuthService().authChanges,
+            builder: (context, snapshot){
+              if(snapshot.connectionState == ConnectionState.waiting){
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+              if(snapshot.hasData){
+                return homeScreen();
+              }
+              return startScreen();
+            },
+          ),
+      ),
+      debugShowCheckedModeBanner: false,
+    ),
+  );
 }
 
 // class MyApp extends StatelessWidget {
-//   const MyApp({super.key});
-//
-//   // This widget is the root of your application.
+//   final AuthService _authService = AuthService();
 //   @override
 //   Widget build(BuildContext context) {
 //     return MaterialApp(
-//     ),
-//   };
+//       home: SafeArea(
+//         child: _authService.handleAuthState(context),
+//       ),
+//       debugShowCheckedModeBanner: false,
+//     );
+//   }
 // }

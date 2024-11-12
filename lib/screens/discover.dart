@@ -9,7 +9,9 @@ import 'package:t_t_project/common_widget/icon_rounded_button.dart';
 import 'package:t_t_project/common_widget/sub_product_button.dart';
 import 'package:t_t_project/constants/colors.dart';
 import 'package:t_t_project/constants/image_strings.dart';
-import 'package:t_t_project/objects/product_manager1.dart';
+
+import '../objects/product.dart';
+import '../services/database_service.dart';
 
 class discoverScreen extends StatefulWidget {
   @override
@@ -24,224 +26,241 @@ class _discoverScreenState extends State<discoverScreen> {
     Image.asset(ltbg3),
   ];
   int myCurrentIndex = 0;
-  ProductManager1 productManager1 =ProductManager1();
+
+  // ProductManager1 productManager1 =ProductManager1();
+  final DatabaseService _databaseService = DatabaseService();
+  List<Product> _products = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProducts();
+  }
+
+  Future<void> _loadProducts() async {
+    final  products = await _databaseService.getProducts();
+    setState(() {
+      _products = products;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-          backgroundColor: blackColor,
-          body: SingleChildScrollView(
-            child: Padding(
-              padding: EdgeInsets.symmetric(vertical: 20, horizontal: 15),
-              child: Column(
+        backgroundColor: blackColor,
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.symmetric(vertical: 20, horizontal: 15),
+            child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Discover Your Best',
-                      style: GoogleFonts.inter(
-                          fontSize: 34,
-                          color: Colors.white,
-                          fontWeight: FontWeight.w500)),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  CarouselSlider(
-                    items: myimages,
-                    options: CarouselOptions(
-                        height: 185,
-                        autoPlay: true,
-                        autoPlayCurve: Curves.fastOutSlowIn,
-                        autoPlayAnimationDuration: Duration(milliseconds: 900),
-                        autoPlayInterval: Duration(seconds: 5),
-                        enlargeCenterPage: true,
-                        aspectRatio: 2.0,
-                        onPageChanged: (index, reason) {
-                          setState(() {
-                            myCurrentIndex = index;
-                          });
-                        }),
-                  ),
-                  SizedBox(
-                    height: 15,
-                  ),
-                  Align(
-                    alignment: Alignment.center,
-                    child: AnimatedSmoothIndicator(
-                      activeIndex: myCurrentIndex,
-                      count: myimages.length,
-                      effect: WormEffect(
-                        dotColor: CupertinoColors.systemGrey6,
-                        activeDotColor: redColor,
-                        dotHeight: 8,
-                        dotWidth: 8,
-                        spacing: 10,
+                Text('Discover Your Best',
+                style: GoogleFonts.inter(
+                    fontSize: 34,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w500)),
+            SizedBox(
+              height: 10,
+            ),
+            CarouselSlider(
+              items: myimages,
+              options: CarouselOptions(
+                  height: 185,
+                  autoPlay: true,
+                  autoPlayCurve: Curves.fastOutSlowIn,
+                  autoPlayAnimationDuration: Duration(milliseconds: 900),
+                  autoPlayInterval: Duration(seconds: 5),
+                  enlargeCenterPage: true,
+                  aspectRatio: 2.0,
+                  onPageChanged: (index, reason) {
+                    setState(() {
+                      myCurrentIndex = index;
+                    });
+                  }),
+            ),
+            SizedBox(
+              height: 15,
+            ),
+            Align(
+              alignment: Alignment.center,
+              child: AnimatedSmoothIndicator(
+                activeIndex: myCurrentIndex,
+                count: myimages.length,
+                effect: WormEffect(
+                  dotColor: CupertinoColors.systemGrey6,
+                  activeDotColor: redColor,
+                  dotHeight: 8,
+                  dotWidth: 8,
+                  spacing: 10,
+                ),
+              ),
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            Text(
+              'Product Type',
+              style: GoogleFonts.inter(
+                  fontSize: 22,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w500),
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            SizedBox(
+              width: double.infinity,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    children: [
+                      iconRoundedButton(
+                        icon: Icons.laptop_chromebook_outlined,
                       ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Text(
-                    'Product Type',
-                    style: GoogleFonts.inter(
-                        fontSize: 22,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w500),
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  SizedBox(
-                    width: double.infinity,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Column(
-                          children: [
-                            iconRoundedButton(
-                              icon: Icons.laptop_chromebook_outlined,
-                            ),
-                            SizedBox(height: 5,),
-                            Text(
-                              'Laptop',
-                              style: GoogleFonts.inter(
-                                fontSize: 14,
-                                color: Colors.white,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ],
+                      SizedBox(height: 5,),
+                      Text(
+                        'Laptop',
+                        style: GoogleFonts.inter(
+                          fontSize: 14,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w500,
                         ),
-                        Column(
-                          children: [
-                            iconRoundedButton(
-                              icon: Icons.headset_outlined,
-                            ),
-                            SizedBox(height: 5,),
-                            Text(
-                              'Headphone',
-                              style: GoogleFonts.inter(
-                                fontSize: 14,
-                                color: Colors.white,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ],
-                        ),
-                        Column(
-                          children: [
-                            iconRoundedButton(
-                              icon: Icons.mouse_outlined,
-                            ),
-                            SizedBox(height: 5,),
-                            Text(
-                              'Mouse',
-                              style: GoogleFonts.inter(
-                                fontSize: 14,
-                                color: Colors.white,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ],
-                        ),
-                        Column(
-                          children: [
-                            iconRoundedButton(
-                              icon: Icons.keyboard_alt_outlined,
-                            ),
-                            SizedBox(height: 5,),
-                            Text(
-                              'Keyboard',
-                              style: GoogleFonts.inter(
-                                fontSize: 14,
-                                color: Colors.white,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ],
-                        ),
-                        Column(
-                          children: [
-                            iconRoundedButton(
-                              icon: Icons.gamepad_outlined,
-                            ),
-                            SizedBox(height: 5,),
-                            Text(
-                              'Gamepad',
-                              style: GoogleFonts.inter(
-                                fontSize: 14,
-                                color: Colors.white,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                  SizedBox(
-                    height: 15,
-                  ),
-                  Text(
-                    'Product Brand',
-                    style: GoogleFonts.inter(
-                        fontSize: 22,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w500),
-                  ),
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: [
-                        brandsButton(
-                          brand: AssetImage(asus),
+                  Column(
+                    children: [
+                      iconRoundedButton(
+                        icon: Icons.headset_outlined,
+                      ),
+                      SizedBox(height: 5,),
+                      Text(
+                        'Headphone',
+                        style: GoogleFonts.inter(
+                          fontSize: 14,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w500,
                         ),
-                        SizedBox(width: 15,),
-                        brandsButton(
-                          brand: AssetImage(msi),
-                        ),
-                        SizedBox(width: 15,),
-                        brandsButton(
-                          brand: AssetImage(apple),
-                        ),
-                        SizedBox(width: 15,),
-                        brandsButton(
-                          brand: AssetImage(acer),
-                        ),
-                        SizedBox(width: 15,),
-                        brandsButton(
-                          brand: AssetImage(logitech),
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-            
-                  Text(
-                    'Popular Products',
-                    style: GoogleFonts.inter(
-                        fontSize: 22,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w500),
+                  Column(
+                    children: [
+                      iconRoundedButton(
+                        icon: Icons.mouse_outlined,
+                      ),
+                      SizedBox(height: 5,),
+                      Text(
+                        'Mouse',
+                        style: GoogleFonts.inter(
+                          fontSize: 14,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
                   ),
-                  SizedBox(height: 10,),
-                  Wrap(
-                    spacing: 15,
-                    runSpacing: 20,
-                    children: productManager1.products.map((e) => SubProductButton(
-                      subimage: e.image,
-                      title: e.title,
-                      rating: 4.4,
-                      price: e.price,
-                      discountPrice: e.discountPrice,
-                    ),
-                    ).toList(),
+                  Column(
+                    children: [
+                      iconRoundedButton(
+                        icon: Icons.keyboard_alt_outlined,
+                      ),
+                      SizedBox(height: 5,),
+                      Text(
+                        'Keyboard',
+                        style: GoogleFonts.inter(
+                          fontSize: 14,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
                   ),
-
+                  Column(
+                    children: [
+                      iconRoundedButton(
+                        icon: Icons.gamepad_outlined,
+                      ),
+                      SizedBox(height: 5,),
+                      Text(
+                        'Gamepad',
+                        style: GoogleFonts.inter(
+                          fontSize: 14,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),
+            SizedBox(
+              height: 15,
+            ),
+            Text(
+              'Product Brand',
+              style: GoogleFonts.inter(
+                  fontSize: 22,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w500),
+            ),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  brandsButton(
+                    brand: AssetImage(asus),
+                  ),
+                  SizedBox(width: 15,),
+                  brandsButton(
+                    brand: AssetImage(msi),
+                  ),
+                  SizedBox(width: 15,),
+                  brandsButton(
+                    brand: AssetImage(apple),
+                  ),
+                  SizedBox(width: 15,),
+                  brandsButton(
+                    brand: AssetImage(acer),
+                  ),
+                  SizedBox(width: 15,),
+                  brandsButton(
+                    brand: AssetImage(logitech),
+                  ),
+                ],
+              ),
+            ),
+
+            Text(
+              'Newest Products',
+              style: GoogleFonts.inter(
+                  fontSize: 22,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w500),
+            ),
+            SizedBox(height: 10,),
+            Wrap(
+              spacing: 15,
+              runSpacing: 20,
+              children: _products.reversed.map((
+                  product) => // product is now a Product object
+              SubProductButton(
+                subimage: product.image,
+                // Access properties directly
+                title: product.title,
+                rating: product.rate,
+                price: product.price,
+                discountPrice: product.discountPrice,
+                product: product, // Pass the Product object
+              )).toList(),
+            ),
+            ],
           ),
+        ),
       ),
-    );
+    ),);
   }
 }

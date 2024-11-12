@@ -54,7 +54,8 @@ class DefaultFirebaseOptions {
     appId: '1:128982238934:android:e887db8cb961df2325eb77',
     messagingSenderId: '128982238934',
     projectId: 'twottech-957c4',
-    storageBucket: 'twottech-957c4.appspot.com',
+    databaseURL: 'https://twottech-957c4-default-rtdb.asia-southeast1.firebasedatabase.app',
+    storageBucket: 'twottech-957c4.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
@@ -62,7 +63,8 @@ class DefaultFirebaseOptions {
     appId: '1:128982238934:ios:50e8477c01938e2525eb77',
     messagingSenderId: '128982238934',
     projectId: 'twottech-957c4',
-    storageBucket: 'twottech-957c4.appspot.com',
+    databaseURL: 'https://twottech-957c4-default-rtdb.asia-southeast1.firebasedatabase.app',
+    storageBucket: 'twottech-957c4.firebasestorage.app',
     iosBundleId: 'com.example.tTProject',
   );
 

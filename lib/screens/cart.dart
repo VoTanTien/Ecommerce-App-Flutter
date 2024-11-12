@@ -6,8 +6,10 @@ import 'package:t_t_project/common_widget/cart_item.dart';
 import 'package:t_t_project/constants/colors.dart';
 import 'package:t_t_project/constants/image_strings.dart';
 import 'package:input_quantity/input_quantity.dart';
-import 'package:t_t_project/objects/product_manager.dart';
 import 'package:t_t_project/screens/order.dart';
+
+import '../objects/cart_item_data.dart';
+import '../services/database_service.dart';
 
 
 class cartScreen extends StatefulWidget {
@@ -17,7 +19,21 @@ class cartScreen extends StatefulWidget {
 
 class _cartScreenState extends State<cartScreen> {
   bool isCheckedAll = false;
-  ProductManager productManager = ProductManager();
+  List<CartItemData> _cartItems = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCartItems();
+  }
+
+  Future<void> _loadCartItems() async {
+    final cartItems = await DatabaseService().getCartItems();
+    setState(() {
+      _cartItems = cartItems;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -81,17 +97,37 @@ class _cartScreenState extends State<cartScreen> {
                 height: 520,
                 width: double.infinity,
                 child: SingleChildScrollView(
-                  child: Wrap(
+                  child: _cartItems.isEmpty
+                      ? Center(
+                    child: Text(
+                    'Your cart is empty',
+                    style: GoogleFonts.inter(
+                        fontSize: 16,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w400),
+                  ),
+                  )
+                      : Wrap(
                     spacing: 0,
                     runSpacing: 10,
-                    children: productManager.products.take(3).map((e) {
-                      return CartItem(
-                          subimage: e.image,
-                          price: e.discountPrice ?? e.price,
-                          option: e.option,
-                          title: e.title,
-                          quantity: e.quantity);
-                    }).toList()
+                    children: _cartItems.map((cartItemData) =>
+                    CartItem(
+                      cartItemData: cartItemData, // Pass cartItemData
+                      onCartItemChecked: (value){
+                        setState(() {
+                          final allChecked = _cartItems.every((item) => item.cartProduct.isChecked);
+                          isCheckedAll = allChecked;
+                        });
+                      },
+                      onQuantityChanged: (newQuantity) {
+                        setState(() {
+                          cartItemData.cartProduct.quantity = newQuantity;
+                          print ('quantity:  ${cartItemData.cartProduct.quantity}');
+                          // can update the database here
+                          // or in a separate function called from here.
+                        });
+                      },
+                    )).toList(),
                   ),
                 ),
               ),
@@ -117,6 +153,10 @@ class _cartScreenState extends State<cartScreen> {
                             onChanged: (val) {
                               setState(() {
                                 isCheckedAll = val!;
+                                // Update the isChecked property in each cart item AND the _cartItems list
+                                for (var i = 0; i < _cartItems.length; i++) {
+                                  _cartItems[i].cartProduct.isChecked = isCheckedAll;
+                                }
                               });
                             }),
                         Text(
@@ -159,7 +199,8 @@ class _cartScreenState extends State<cartScreen> {
                             ),
                           ),
                           onPressed: () {
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => orderScreen()));
+                            final checkedCartItems = _cartItems.where((item) => item.cartProduct.isChecked).toList();
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => orderScreen(cartItems: checkedCartItems)));
                           },
                           child: Text(
                             'Buy now',

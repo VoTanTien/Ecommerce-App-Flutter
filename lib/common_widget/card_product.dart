@@ -1,8 +1,9 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:t_t_project/common_widget/assessment_product.dart';
+import 'package:t_t_project/common_widget/assessment_item.dart';
 import 'package:t_t_project/constants/colors.dart';
 import 'package:t_t_project/screens/rate.dart';
 
@@ -19,10 +20,23 @@ class  CardProductItem extends StatelessWidget{
       children: [
         Row(
           children: [
-            Image(
-              image: subimage,
-              width: 110,
-              height: 110,
+            Padding(
+              padding:
+              EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+              child: ClipRRect(
+                  borderRadius: BorderRadius.circular(8.0),
+                  child: CachedNetworkImage(
+                    imageUrl: subimage,
+                    placeholder: (context, url) =>
+                        CircularProgressIndicator(),
+                    // Widget to show while loading
+                    errorWidget: (context, url, error) =>
+                        Icon(Icons.error),
+                    // Widget to show if an error occurs
+                    width: 80,
+                    height: 90,
+                    fit: BoxFit.cover,
+                  )),
             ),
             Expanded(
               child: Column(
@@ -37,7 +51,7 @@ class  CardProductItem extends StatelessWidget{
                         fontWeight: FontWeight.w600),
                   ),
                   Text(
-                    'Color: $option',
+                    'Accessory colors: $option',
                     style: GoogleFonts.inter(
                         fontSize: 13,
                         color: Color(0xFFA0A0A0),

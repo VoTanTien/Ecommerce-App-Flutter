@@ -4,13 +4,16 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:t_t_project/common_widget/review_item.dart';
 import 'package:t_t_project/constants/colors.dart';
-import 'package:t_t_project/objects/comment_manager.dart';
+import 'package:t_t_project/objects/comment.dart';
 import 'package:t_t_project/screens/product_detail.dart';
 
+import '../constants/image_strings.dart';
+
 class reviewScreen extends StatelessWidget {
-  double initRating = 4.0;
-  int countReview = 20;
-  CommentManager commentManager = CommentManager();
+  final double averageRating ;
+  final int countReview ;
+  final List<CommentData> comments;
+  const reviewScreen({Key? key, required this.comments, required this.averageRating, required this.countReview,}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +43,7 @@ class reviewScreen extends StatelessWidget {
                 Row(
                   children: [
                     Text(
-                      '$initRating ',
+                      '${averageRating.toStringAsFixed(1)} / 5.0 ',
                       style: GoogleFonts.inter(
                         fontSize: 30,
                         fontWeight: FontWeight.w700,
@@ -51,7 +54,7 @@ class reviewScreen extends StatelessWidget {
                       itemSize: 20,
                       minRating: 1,
                       maxRating: 5,
-                      initialRating: initRating,
+                      initialRating: averageRating,
                       allowHalfRating: true,
                       onRatingUpdate: (i) {},
                       ratingWidget: RatingWidget(
@@ -82,16 +85,16 @@ class reviewScreen extends StatelessWidget {
                 Wrap(
                     spacing: 0,
                     runSpacing: 5,
-                    children: commentManager.comments
-                        .map(
+                    children: comments.map(
                           (e) => ReviewItem(
-                            user: e.name,
-                            initRating: e.rate,
-                            title: e.title,
-                            image: e.image,
-                          ),
-                        )
-                        .toList()),
+                        user: e.userName, // Access the correct userName field
+                        initRating: e.rate,
+                        title: e.title,
+                        image: e.image,
+                      ),
+                    )
+                        .toList()
+                ),
               ],
             ),
           ),

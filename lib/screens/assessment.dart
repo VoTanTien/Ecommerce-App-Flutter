@@ -1,11 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:t_t_project/common_widget/assessment_product.dart';
+import 'package:t_t_project/common_widget/assessment_item.dart';
 import 'package:t_t_project/constants/colors.dart';
 import 'package:t_t_project/constants/image_strings.dart';
-import 'package:t_t_project/objects/product_manager.dart';
+import 'package:t_t_project/objects/assessment_item_data.dart';
 import 'package:t_t_project/screens/product_detail.dart';
+
+import '../services/database_service.dart';
 
 class assessmentScreen extends StatefulWidget{
   @override
@@ -13,9 +15,23 @@ class assessmentScreen extends StatefulWidget{
 }
 
 class _assessmentScreenState extends State<assessmentScreen> {
-  bool isClickUnRated = true;
-  bool isClickRated = false;
-  ProductManager productManager = ProductManager();
+  bool isClickAll = true;
+  bool isClickNewest = false;
+  List<AssessmentItemData> _assessmentItems = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadAssessmentItems();
+  }
+
+  Future<void> _loadAssessmentItems() async {
+    final assessmentItems = await DatabaseService().getAssessmentItems();
+    setState(() {
+      _assessmentItems = assessmentItems;
+    });
+  }
+  
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -47,19 +63,19 @@ class _assessmentScreenState extends State<assessmentScreen> {
                         style: ElevatedButton.styleFrom(
                           padding:
                           EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-                          backgroundColor: isClickUnRated ? redColor : blackColor,
+                          backgroundColor: isClickAll ? redColor : blackColor,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),
                           ),
                         ),
                         onPressed: () {
                           setState(() {
-                            isClickUnRated = true;
-                            isClickRated = false;
+                            isClickAll = true;
+                            isClickNewest = false;
                           });
                         },
                         child: Text(
-                          'Un Rated',
+                          'All',
                           style: GoogleFonts.inter(
                               fontSize: 14,
                               color: Colors.white,
@@ -76,19 +92,20 @@ class _assessmentScreenState extends State<assessmentScreen> {
                           padding: EdgeInsets.symmetric(
                             vertical: 5,
                           ),
-                          backgroundColor: isClickRated ? redColor : blackColor,
+                          backgroundColor: isClickNewest ? redColor : blackColor,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),
                           ),
                         ),
                         onPressed: () {
                           setState(() {
-                            isClickUnRated = false;
-                            isClickRated = true;
+                            isClickAll = false;
+                            isClickNewest = true;
                           });
                         },
                         child: Text(
-                          'Rated',
+                          'Newest',
+
                           style: GoogleFonts.inter(
                               fontSize: 14,
                               color: Colors.white,
@@ -104,13 +121,8 @@ class _assessmentScreenState extends State<assessmentScreen> {
                 Wrap(
                   spacing: 0,
                   runSpacing: 10,
-                  children: productManager.products.take(3).map((e) {
-                    return AssessmentItem(
-                      subimage: e.image,
-                      price: e.discountPrice ?? e.price,
-                      option: e.option,
-                      title: e.title,
-                    );
+                  children: _assessmentItems.map((e) {
+                    return AssessmentItem(assessment: e,);
                   }).toList()
                 ),
               ],

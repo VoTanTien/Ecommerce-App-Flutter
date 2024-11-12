@@ -1,10 +1,15 @@
-import 'package:flutter/cupertino.dart';
-
-class Comment {
-  String name;
+class CommentData {
+  String userName;
+  int productId;
   double rate;
   String title;
-  AssetImage? image;
+  String? image;
 
-  Comment(this.name, this.rate, this.title, this.image);
+  CommentData({
+    required this.userName,
+    required this.productId,
+    required this.rate,
+    required this.title,
+    this.image
+  });
 }

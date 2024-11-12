@@ -11,12 +11,40 @@ import 'package:t_t_project/screens/liked.dart';
 import 'package:t_t_project/screens/loginscreens/enter_email.dart';
 import 'package:t_t_project/screens/loginscreens/login.dart';
 
+import '../services/auth_service.dart';
+import '../services/database_service.dart';
+
 class profileScreen extends StatefulWidget {
   @override
   State<profileScreen> createState() => _profileScreenState();
 }
 
 class _profileScreenState extends State<profileScreen> {
+  String name = '';
+  String email = '';
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
+
+  Future<void> _loadUserData() async {
+    final databaseService = DatabaseService();
+    try {
+      final userData = await databaseService.getUserData();
+      setState(() {
+        name = userData['name']!;
+        email = userData['email']!;
+      });
+    } catch (e) {
+      // Handle error, for example by showing a Snackbar
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Failed to load user data")),
+      );
+    }
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -48,10 +76,19 @@ class _profileScreenState extends State<profileScreen> {
                 height: 10,
               ),
               Text(
-                'Vo Tan Tien',
+                name,
                 textAlign: TextAlign.center,
                 style: GoogleFonts.inter(
-                    fontSize: 22,
+                    fontSize: 20,
+                    color: Colors.black,
+                    fontWeight: FontWeight.w500),
+              ),
+
+              Text(
+                email,
+                textAlign: TextAlign.center,
+                style: GoogleFonts.inter(
+                    fontSize: 18,
                     color: Colors.black,
                     fontWeight: FontWeight.w500),
               ),
@@ -94,18 +131,18 @@ class _profileScreenState extends State<profileScreen> {
                           Navigator.push(context, MaterialPageRoute(builder: (context) => History()));
                         },
                       ),
-                      ListTile(
-                        title: Text('Liked',
-                            style: GoogleFonts.inter(
-                              fontSize: 18,
-                              color: Colors.white,)
-                        ),
-                        trailing: Icon(Icons.arrow_forward_ios_rounded, color: Colors.white,),
-                        leading: Icon(Icons.favorite_border_outlined, color: Colors.white,),
-                        onTap: (){
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => likedScreen()));
-                        },
-                      ),
+                      // ListTile(
+                      //   title: Text('Liked',
+                      //       style: GoogleFonts.inter(
+                      //         fontSize: 18,
+                      //         color: Colors.white,)
+                      //   ),
+                      //   trailing: Icon(Icons.arrow_forward_ios_rounded, color: Colors.white,),
+                      //   leading: Icon(Icons.favorite_border_outlined, color: Colors.white,),
+                      //   onTap: (){
+                      //     Navigator.push(context, MaterialPageRoute(builder: (context) => likedScreen()));
+                      //   },
+                      // ),
                       ListTile(
                         title: Text('My assessment',
                             style: GoogleFonts.inter(
@@ -149,7 +186,9 @@ class _profileScreenState extends State<profileScreen> {
                         ),
                         trailing: Icon(Icons.arrow_forward_ios_rounded, color: Colors.white,),
                         leading: Icon(Icons.help_outline, color: Colors.white,),
-                        onTap: (){},
+                        onTap: () async{
+                          await AuthService().signout(context: context);
+                        },
                       ),
                       ListTile(
                         title: Text('Log out',

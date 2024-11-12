@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
@@ -72,17 +73,17 @@ class ReviewItem extends StatelessWidget{
                 color: Colors.white,),
             ),
             if (image != null)
-            Container(
-              decoration: BoxDecoration(
-                shape: BoxShape.rectangle,
-                borderRadius: BorderRadius.circular(15),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(10.0),
+                child: CachedNetworkImage(
+                  imageUrl: image,
+                  placeholder: (context, url) => CircularProgressIndicator(), // Widget to show while loading
+                  errorWidget: (context, url, error) => Icon(Icons.error), // Widget to show if an error occurs
+                  width: 80,
+                  height: 100,
+                  fit: BoxFit.cover,
+                )
               ),
-              height: 100,
-              width: 100,
-              child: Image(
-                  image: image,
-              ),
-            ),
           ],
         ),
       ),

@@ -1,16 +1,16 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:t_t_project/constants/colors.dart';
 
-class OrderItem extends StatelessWidget{
-  final subimage;
-  final title;
-  final price;
-  final option;
-  final quantity;
+import '../objects/cart_item_data.dart';
 
-  const OrderItem({Key? key, required this.subimage, required this.price, required this.option, required this.title, required this.quantity, }) : super(key: key) ;
+class OrderItem extends StatelessWidget{
+  final CartItemData cartItemData;
+
+  const OrderItem({Key? key, required this.cartItemData, }) : super(key: key) ;
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -22,10 +22,18 @@ class OrderItem extends StatelessWidget{
         children: [
           Row(
             children: [
-              Image(
-                image: subimage,
-                width: 110,
-                height: 110,
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                child: ClipRRect(
+                    borderRadius: BorderRadius.circular(8.0),
+                    child: CachedNetworkImage(
+                      imageUrl: cartItemData.product.image,
+                      placeholder: (context, url) => CircularProgressIndicator(),
+                      errorWidget: (context, url, error) => Icon(Icons.error),
+                      width: 80,
+                      height: 90,
+                      fit: BoxFit.cover,
+                    )),
               ),
               Expanded(
                 child: Column(
@@ -34,30 +42,36 @@ class OrderItem extends StatelessWidget{
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     Text(
-                      title,
+                      cartItemData.product.title,
                       style: GoogleFonts.inter(
-                          fontSize: 13,
+                          fontSize: 16,
                           color: Colors.white,
-                          fontWeight: FontWeight.w400),
+                          fontWeight: FontWeight.w500),
+                    ),
+                    SizedBox(
+                      height: 5,
                     ),
                     Text(
-                        'Color: $option',
+                        'option: ${cartItemData.cartProduct.option}',
                       style: GoogleFonts.inter(
-                          fontSize: 12,
+                          fontSize: 13,
                           color: Color(0xFFA0A0A0),
                           fontWeight: FontWeight.w400),
+                    ),
+                    SizedBox(
+                      height: 5,
                     ),
                     Row(
                       children: [
                         Text(
-                          '\$ $price',
+                          '\$ ${cartItemData.product.discountPrice ?? cartItemData.product.price}',
                           style: GoogleFonts.inter(
-                              fontSize: 14,
+                              fontSize: 16,
                               color: Colors.white,
                               fontWeight: FontWeight.w600),
                         ),
                         Text(
-                          '    x $quantity',
+                          '  x ${cartItemData.cartProduct.quantity}',
                           style: GoogleFonts.inter(
                               fontSize: 14,
                               color: Colors.white,

@@ -2,33 +2,54 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:t_t_project/common_widget/order_product.dart';
+import 'package:t_t_project/common_widget/order_item.dart';
 import 'package:t_t_project/constants/colors.dart';
 import 'package:t_t_project/constants/image_strings.dart';
 import 'package:t_t_project/objects/address.dart';
 import 'package:t_t_project/objects/address_manager.dart';
-import 'package:t_t_project/objects/product_manager.dart';
 import 'package:t_t_project/screens/choose_address.dart';
 import 'package:t_t_project/screens/order.dart';
 import 'package:t_t_project/screens/success.dart';
 
-// var shipFee = 10;
-// var productPrice = 0;
-// var total;
-int shipFee = 10;
-int productPrice = 0;
-int total = 1909;
-ProductManager productManager = ProductManager();
+import '../objects/cart_item_data.dart';
+import '../services/database_service.dart';
 
 class orderScreen extends StatefulWidget {
+  final List<CartItemData> cartItems; // Receive cartItems
+
+  const orderScreen({Key? key, required this.cartItems}) : super(key: key);
+
   @override
   State<orderScreen> createState() => _orderScreenState();
 }
 
 class _orderScreenState extends State<orderScreen> {
+  int shipFee = 10;
+  int productPrice = 0;
+  int total = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _calculateTotal(); // Calculate total on initialization.
+  }
+
+  void _calculateTotal() {
+    // Calculate productPrice from cartItems received
+    setState(() {
+      //Important: Wrap in setState to rebuild the widget.
+      productPrice = widget.cartItems.fold(
+          0,
+          (sum, item) =>
+              sum +
+              (item.product.discountPrice ?? item.product.price) *
+                  item.cartProduct.quantity);
+      total = productPrice + shipFee; // Calculate total price
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    productPrice = 0;
     return SafeArea(
       child: Scaffold(
         backgroundColor: blackColor,
@@ -53,22 +74,38 @@ class _orderScreenState extends State<orderScreen> {
                 padding: EdgeInsets.symmetric(vertical: 0, horizontal: 20),
                 child: Column(
                   children: [
+                    //display address
                     AddressField(),
                     Divider(
                       color: Colors.white,
                       height: 20,
                       thickness: 1,
                     ),
-                    ProductItem(),
+                    // Display oder items
+                    Wrap(
+                      spacing: 0,
+                      runSpacing: 10,
+                      children: widget.cartItems.map((cartItemData) {
+                        // Use widget.cartItems
+                        return OrderItem(
+                          // Assuming you have an OrderItem widget
+                          cartItemData: cartItemData,
+                        );
+                      }).toList(),
+                    ),
                     SizedBox(
                       height: 10,
                     ),
-                    // Payment Method
+                    // display Payment Method
                     PaymentMethod(),
                     SizedBox(
                       height: 10,
                     ),
-                    PaymentDetail(),
+                    // display payment detail
+                    PaymentDetail(
+                        productPrice: productPrice,
+                        total: total,
+                        shipFee: shipFee),
                     SizedBox(
                       height: 10,
                     )
@@ -122,11 +159,19 @@ class _orderScreenState extends State<orderScreen> {
                                 borderRadius: BorderRadius.circular(10),
                               ),
                             ),
-                            onPressed: () {
-                              Navigator.push(
+                            onPressed: () async{
+                              try {
+                                await DatabaseService().createOrdersFromCart(widget.cartItems);
+                                Navigator.push(
                                   context,
-                                  MaterialPageRoute(
-                                      builder: (cntext) => successScreen()));
+                                  MaterialPageRoute(builder: (context) => successScreen()),
+                                );
+                              } catch (e) {
+                                // Handle the error, e.g., show a SnackBar or dialog
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text('Error creating order: $e')),
+                                );
+                              }
                             },
                             child: Text(
                               'Buy now',
@@ -156,7 +201,7 @@ class PaymentMethod extends StatefulWidget {
 }
 
 class _PaymentMethodState extends State<PaymentMethod> {
-  bool checkCodmethod = false;
+  bool checkCodmethod = true;
 
   bool checkCreditmethod = false;
 
@@ -268,7 +313,6 @@ class _AddressFieldState extends State<AddressField> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     a = getDefault();
   }
@@ -329,34 +373,25 @@ class _AddressFieldState extends State<AddressField> {
       ),
       onTap: () {
         Navigator.push(
-            context, MaterialPageRoute(builder: (cntext) => AddressScreen()));
+            context, MaterialPageRoute(builder: (context) => AddressScreen()));
       },
     );
   }
 }
 
 //---------------
-class ProductItem extends StatelessWidget {
-  Widget build(BuildContext context) {
-    return Wrap(
-        spacing: 0,
-        runSpacing: 10,
-        children: productManager.products.take(2).map((e) {
-          e.discountPrice != null
-              ? productPrice += e.discountPrice!
-              : productPrice += e.price;
-          return OrderItem(
-              subimage: e.image,
-              price: e.discountPrice ?? e.price,
-              option: e.option,
-              title: e.title,
-              quantity: e.quantity);
-        }).toList());
-  }
-}
-
-//---------------
 class PaymentDetail extends StatelessWidget {
+  final int productPrice;
+  final int total;
+  final shipFee;
+
+  const PaymentDetail(
+      {Key? key,
+      required this.productPrice,
+      required this.total,
+      required this.shipFee})
+      : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -423,7 +458,7 @@ class PaymentDetail extends StatelessWidget {
                           fontSize: 18,
                           color: Colors.white,
                         )),
-                    Text('\$${productPrice + shipFee}',
+                    Text('\$ $total',
                         style: GoogleFonts.inter(
                           fontSize: 18,
                           color: redColor,

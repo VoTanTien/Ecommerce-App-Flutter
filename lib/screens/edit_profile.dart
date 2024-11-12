@@ -6,12 +6,41 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:t_t_project/constants/colors.dart';
 import 'package:t_t_project/constants/image_strings.dart';
 
+import '../services/database_service.dart';
+
 class editProfileScreen extends StatefulWidget {
   @override
   State<editProfileScreen> createState() => _editProfileScreenState();
 }
 
 class _editProfileScreenState extends State<editProfileScreen> {
+  final _phoneController = TextEditingController();
+  final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
+
+  Future<void> _loadUserData() async {
+    final databaseService = DatabaseService();
+    try {
+      final userData = await databaseService.getUserData();
+      setState(() {
+        _nameController.text = userData['name']!;
+        _emailController.text = userData['email']!;
+        _phoneController.text = userData['phone']!;
+      });
+    } catch (e) {
+      // Handle error, for example by showing a Snackbar
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Failed to load user data")),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -57,11 +86,11 @@ class _editProfileScreenState extends State<editProfileScreen> {
                 style: GoogleFonts.inter(fontSize: 18, color: Colors.white),
               ),
               SizedBox(
-                height: size.height * 0.01,
+                height: size.height * 0.02,
               ),
               TextFormField(
+                controller: _nameController,
                 cursorColor: Colors.white,
-                initialValue: 'Vo Tan Tien',
                 style: TextStyle(fontSize: 20, color: Colors.white),
                 decoration: InputDecoration(
                   enabledBorder: OutlineInputBorder(
@@ -76,11 +105,11 @@ class _editProfileScreenState extends State<editProfileScreen> {
                 ),
               ),
               SizedBox(
-                height: size.height * 0.03,
+                height: size.height * 0.05,
               ),
               TextFormField(
+                controller: _emailController,
                 cursorColor: Colors.white,
-                initialValue: 'votien040302@gmail.com',
                 style: TextStyle(fontSize: 20, color: Colors.white),
                 decoration: InputDecoration(
                   enabledBorder: OutlineInputBorder(
@@ -95,11 +124,11 @@ class _editProfileScreenState extends State<editProfileScreen> {
                 ),
               ),
               SizedBox(
-                height: size.height * 0.03,
+                height: size.height * 0.05,
               ),
               TextFormField(
+                controller: _phoneController,
                 cursorColor: Colors.white,
-                initialValue: '0379743117',
                 style: TextStyle(fontSize: 20, color: Colors.white),
                 decoration: InputDecoration(
                   enabledBorder: OutlineInputBorder(
@@ -114,43 +143,43 @@ class _editProfileScreenState extends State<editProfileScreen> {
                 ),
               ),
               SizedBox(
-                height: size.height * 0.03,
+                height: size.height * 0.05,
               ),
-              TextFormField(
-                cursorColor: Colors.white,
-                initialValue: '123 Street A, District 1, Ho Chi Minh City',
-                style: TextStyle(fontSize: 20, color: Colors.white),
-                decoration: InputDecoration(
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(width: 2, color: Colors.white),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  labelText: 'Address',
-                  labelStyle: TextStyle(color: Colors.white),
-                  focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.red, width: 2),
-                      borderRadius: BorderRadius.circular(20)),
-                ),
-              ),
+              // TextFormField(
+              //   cursorColor: Colors.white,
+              //   initialValue: '123 Street A, District 1, Ho Chi Minh City',
+              //   style: TextStyle(fontSize: 20, color: Colors.white),
+              //   decoration: InputDecoration(
+              //     enabledBorder: OutlineInputBorder(
+              //       borderSide: BorderSide(width: 2, color: Colors.white),
+              //       borderRadius: BorderRadius.circular(20),
+              //     ),
+              //     labelText: 'Address',
+              //     labelStyle: TextStyle(color: Colors.white),
+              //     focusedBorder: OutlineInputBorder(
+              //         borderSide: BorderSide(color: Colors.red, width: 2),
+              //         borderRadius: BorderRadius.circular(20)),
+              //   ),
+              // ),
               SizedBox(
-                height: size.height * 0.03,
+                height: size.height * 0.05,
               ),
-              TextFormField(
-                cursorColor: Colors.white,
-                initialValue: 'tienpro1234',
-                style: TextStyle(fontSize: 20, color: Colors.white),
-                decoration: InputDecoration(
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(width: 2, color: Colors.white),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  labelText: 'Password',
-                  labelStyle: TextStyle(color: Colors.white),
-                  focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.red, width: 2),
-                      borderRadius: BorderRadius.circular(20)),
-                ),
-              ),
+              // TextFormField(
+              //   cursorColor: Colors.white,
+              //   initialValue: 'tienpro1234',
+              //   style: TextStyle(fontSize: 20, color: Colors.white),
+              //   decoration: InputDecoration(
+              //     enabledBorder: OutlineInputBorder(
+              //       borderSide: BorderSide(width: 2, color: Colors.white),
+              //       borderRadius: BorderRadius.circular(20),
+              //     ),
+              //     labelText: 'Password',
+              //     labelStyle: TextStyle(color: Colors.white),
+              //     focusedBorder: OutlineInputBorder(
+              //         borderSide: BorderSide(color: Colors.red, width: 2),
+              //         borderRadius: BorderRadius.circular(20)),
+              //   ),
+              // ),
               SizedBox(height: size.height * 0.05),
               SizedBox(
                 width: double.infinity,

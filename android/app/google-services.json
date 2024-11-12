@@ -1,8 +1,9 @@
 {
   "project_info": {
     "project_number": "128982238934",
+    "firebase_url": "https://twottech-957c4-default-rtdb.asia-southeast1.firebasedatabase.app",
     "project_id": "twottech-957c4",
-    "storage_bucket": "twottech-957c4.appspot.com"
+    "storage_bucket": "twottech-957c4.firebasestorage.app"
   },
   "client": [
     {
