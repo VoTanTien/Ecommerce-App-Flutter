@@ -8,6 +8,9 @@ class Product {
   final int price;
   final int? discountPrice;
   final double rate;
+  final String weight;
+  final String material;
+  final String characteristic;
 
   Product({
     required this.id,
@@ -19,6 +22,9 @@ class Product {
     required this.price,
     this.discountPrice,
     required this.rate,
+    required this.weight,
+    required this.material,
+    required this.characteristic,
   });
 
   factory Product.fromMap(Map<String, dynamic> map, int id) {
@@ -28,6 +34,9 @@ class Product {
       image: map['image']?.toString() ?? '',
       option: map['option']?.toString() ?? '',
       size: map['size']?.toString() ?? '',
+      weight: map['weight']?.toString() ?? '',
+      material: map['material']?.toString() ?? '',
+      characteristic: map['characteristic']?.toString() ?? '',
       describe: map['describe']?.toString() ?? '',
       price: map['price']?.toInt() ?? 0, // Convert to int, provide default
       discountPrice: map['discountPrice']?.toInt(), // Nullable int

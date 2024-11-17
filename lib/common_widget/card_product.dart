@@ -50,13 +50,16 @@ class  CardProductItem extends StatelessWidget{
                         color: Colors.black,
                         fontWeight: FontWeight.w600),
                   ),
+                  option !='' ?
                   Text(
                     'Accessory colors: $option',
                     style: GoogleFonts.inter(
                         fontSize: 13,
                         color: Color(0xFFA0A0A0),
                         fontWeight: FontWeight.w400),
-                  ),
+                  )
+                  :
+                      SizedBox(height: 8,),
                   Text(
                     '\$ $price',
                     style: GoogleFonts.inter(

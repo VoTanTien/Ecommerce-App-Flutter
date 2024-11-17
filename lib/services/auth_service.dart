@@ -113,4 +113,28 @@ class AuthService {
     Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) => loginScreen()));
   }
 
+  Future<void> resetPass({required String email}) async {
+    try{
+      await _auth.sendPasswordResetEmail(email: email);
+      Fluttertoast.showToast(
+        msg: 'Password reset link sent, please check your email',
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.SNACKBAR,
+        backgroundColor: Colors.black54,
+        textColor: Colors.white,
+        fontSize: 14,
+      );
+
+    } on FirebaseAuthException catch (e){
+      Fluttertoast.showToast(
+        msg: e.message.toString(),
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.SNACKBAR,
+        backgroundColor: Colors.black54,
+        textColor: Colors.white,
+        fontSize: 14,
+      );
+    }
+  }
+
 }

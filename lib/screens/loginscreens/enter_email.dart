@@ -4,8 +4,10 @@ import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:t_t_project/constants/image_strings.dart';
 import 'package:t_t_project/screens/loginscreens/verify_email.dart';
+import 'package:t_t_project/services/auth_service.dart';
 
 class enterEmailScreen extends StatelessWidget {
+  final emailController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -49,18 +51,19 @@ class enterEmailScreen extends StatelessWidget {
                     child: Column(
                       children: [
                         Image(
-                          image: AssetImage(logo),
+                          image: AssetImage(logonew),
                           height: size.height * 0.3,
                         ),
                         SizedBox(height: size.height*0.03),
                         Text(
-                          'Please enter your email to recover your password',
+                          'Please enter your email to reset your password ',
                           textAlign: TextAlign.center,
-                          style: GoogleFonts.inter(fontSize: 20, color: Colors.white),
+                          style: GoogleFonts.inter(fontSize: 18, color: Colors.white),
                         ),
                         SizedBox(height: size.height*0.05),
                         Form(
                           child: TextFormField(
+                            controller: emailController,
                             cursorColor: Colors.white,
                             style: TextStyle(fontSize: 20, color: Colors.white),
                             decoration: InputDecoration(
@@ -90,11 +93,11 @@ class enterEmailScreen extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(18),
                               ),
                             ),
-                            onPressed: () {
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => verifyEmailScreen()));
+                            onPressed: () async {
+                              await AuthService().resetPass(email: emailController.text.toString());
                             },
                             child: Text(
-                              'NEXT',
+                              'RESET PASSWORD',
                               style: GoogleFonts.inter(
                                   fontSize: 20,
                                   color: Colors.white,

@@ -29,3 +29,10 @@ const String lt7s = 'assets/images/LT16-sub.png';
 const String lt8s = 'assets/images/LT17-sub.png';
 const String lt9s = 'assets/images/LT18-sub.png';
 const String lt10s = 'assets/images/LT06-sub.png';
+const String bgn1 = 'assets/images/bgn1.jpg';
+const String bgn2 = 'assets/images/bgn2.jpg';
+const String bgn3 = 'assets/images/bgn3-modified.png';
+const String bgn4 = 'assets/images/bgn4-modified.png';
+const String bgn5 = 'assets/images/bgn5-modified.png';
+const String logonew = 'assets/images/logonew1.png';
+

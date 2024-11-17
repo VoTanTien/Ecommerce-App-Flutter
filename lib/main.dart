@@ -22,7 +22,6 @@ void main() async {
   runApp(
     MaterialApp(
       home: SafeArea(
-        // If there is a signed-in user, navigate to HomeScreen, otherwise to StartScreen
         child: StreamBuilder(
             stream: AuthService().authChanges,
             builder: (context, snapshot){
@@ -34,7 +33,7 @@ void main() async {
               if(snapshot.hasData){
                 return homeScreen();
               }
-              return startScreen();
+              return loginScreen();
             },
           ),
       ),

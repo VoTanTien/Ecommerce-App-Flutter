@@ -32,7 +32,7 @@ class _loginScreenState extends State<loginScreen> {
               height: size.height,
               decoration: BoxDecoration(
                 image:
-                    DecorationImage(image: AssetImage(bg2), fit: BoxFit.cover),
+                    DecorationImage(image: AssetImage(bgn1), fit: BoxFit.cover),
               ),
             ),
             Container(
@@ -44,7 +44,7 @@ class _loginScreenState extends State<loginScreen> {
                 child: Column(
                   children: [
                     Image(
-                      image: AssetImage(logo),
+                      image: AssetImage(logonew),
                       height: size.height * 0.2,
                     ),
                     SizedBox(height: 20),

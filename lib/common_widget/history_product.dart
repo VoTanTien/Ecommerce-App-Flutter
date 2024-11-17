@@ -144,7 +144,7 @@ class HistoryItem extends StatelessWidget{
               ),
             ),
             onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => rateScreen()));
+              Navigator.push(context, MaterialPageRoute(builder: (context) => rateScreen(product: product,)));
             },
             child: Text(
               'Rate product',

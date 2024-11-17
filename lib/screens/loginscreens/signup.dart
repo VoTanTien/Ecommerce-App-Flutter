@@ -82,7 +82,7 @@ class _signupScreenState extends State<signupScreen> {
               height: size.height,
               decoration: BoxDecoration(
                   image: DecorationImage(
-                      image: AssetImage(bg3), fit: BoxFit.cover)),
+                      image: AssetImage(bgn2), fit: BoxFit.cover)),
             ),
             Container(
               color: Color.fromARGB(200, 68, 72, 75),
@@ -94,7 +94,7 @@ class _signupScreenState extends State<signupScreen> {
                   key: _formKey,
                   child: Column(
                     children: [
-                      Image(image: AssetImage(logo), height: size.height * 0.2),
+                      Image(image: AssetImage(logonew), height: size.height * 0.2),
                       SizedBox(height: size.height * 0.02),
                       Form(
                         child: Column(

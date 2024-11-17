@@ -186,8 +186,8 @@ class _profileScreenState extends State<profileScreen> {
                         ),
                         trailing: Icon(Icons.arrow_forward_ios_rounded, color: Colors.white,),
                         leading: Icon(Icons.help_outline, color: Colors.white,),
-                        onTap: () async{
-                          await AuthService().signout(context: context);
+                        onTap: () {
+
                         },
                       ),
                       ListTile(
@@ -198,8 +198,8 @@ class _profileScreenState extends State<profileScreen> {
                         ),
                         trailing: Icon(Icons.arrow_forward_ios_rounded, color: redColor,),
                         leading: Icon(Icons.logout_outlined, color: redColor,),
-                        onTap: (){
-                          Navigator.push(context, MaterialPageRoute(builder: (context)=> loginScreen()));
+                        onTap: () async{
+                          await AuthService().signout(context: context);
                         },
                       ),
                     ],

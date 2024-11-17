@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:t_t_project/common_widget/assessment_item.dart';
 import 'package:t_t_project/objects/assessment_item_data.dart';
+import 'package:t_t_project/objects/category.dart';
 
 import '../objects/cart_item_data.dart';
 import '../objects/cart_product.dart';
@@ -222,6 +223,8 @@ class DatabaseService{
       final uid = _auth.currentUser?.uid;
       if (uid == null) return;
 
+      String compositeKey = "$uid-$productId-$option";
+
       final cartRef = _databaseRef.child('Carts');
       final existingCartsSnapshot = await cartRef.orderByChild('uid').equalTo(uid).once();
 
@@ -246,8 +249,8 @@ class DatabaseService{
 
         if (!itemExists) {
           // Add new cart item
-          final newCartKey = cartRef.push().key; // Generate a new key
-          await cartRef.child(newCartKey!).set({
+          // final newCartKey = cartRef.push().key; // Generate a new key
+          await cartRef.child(compositeKey).set({
             'uid': uid,
             'productid': productId,
             'option': option,
@@ -284,7 +287,28 @@ class DatabaseService{
 
     } catch (e) {
       print("Error adding to cart: $e");
-      // Handle error appropriately (e.g., show an error message)
+
+
+    }
+  }
+
+  Future<void> removeCheckedCartItems(List<CartItemData> checkedCartItems) async {
+    try {
+      final uid = _auth.currentUser?.uid;
+      if (uid == null) return;
+
+      final cartRef = _databaseRef.child('Carts');
+
+      for (final cartItemData in checkedCartItems) {
+        final productId = cartItemData.product.id;
+        final option = cartItemData.cartProduct.option!;
+
+        String compositeKey = "$uid-$productId-$option";
+
+        await cartRef.child(compositeKey).remove();
+      }
+    } catch (e) {
+      print("Error removing checked cart items: $e");
 
     }
   }
@@ -409,5 +433,69 @@ class DatabaseService{
       return [];
     }
   }
+
+  Future<List<Category>> getCategory() async{
+    try {
+      final categorySnapshot = await _databaseRef.child('Size').get();
+      if(categorySnapshot.exists){
+        final categorys = <Category>[];
+        for (final child in categorySnapshot.children){
+          final categoryData = Map<String, dynamic>.from(child.value as Map);
+          categorys.add(Category(title: categoryData['title']??''));
+        }
+        return categorys;
+      } else{
+        return [];
+      }
+    } catch (e) {
+      print('Error fetching product items: $e');
+      return [];
+    }
+  }
+
+  Future<void> addComment(String title, int productId, double rate, String image ) async {
+    try {
+      final uid = _auth.currentUser?.uid;
+      if (uid == null) {
+        return;
+      }
+
+      final commentsRef = _databaseRef.child('Comments');
+      final newCommentKey = commentsRef
+          .push()
+          .key;
+      if (image.isNotEmpty) {
+        await commentsRef.child(newCommentKey!).set({
+          'uid': uid,
+          'productid': productId,
+          'rate': rate,
+          'title': title,
+          'image': image,
+        });
+      } else{
+        await commentsRef.child(newCommentKey!).set({
+          'uid': uid,
+          'productid': productId,
+          'rate': rate,
+          'title': title,
+        });
+      }
+
+      Fluttertoast.showToast(
+        msg: 'Send comment Successfully!',
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.SNACKBAR,
+        backgroundColor: Colors.black54,
+        textColor: Colors.white,
+        fontSize: 16,
+      );
+
+    } catch (e) {
+      print("Error adding comment: $e");
+      rethrow;
+    }
+  }
+
+
 
 }

@@ -26,6 +26,7 @@ class Parameters extends StatelessWidget{
             subtitle,
             style: GoogleFonts.inter(
               fontSize: 14,
+              fontWeight: FontWeight.w500,
               color: Colors.white,),
           ),
         ),

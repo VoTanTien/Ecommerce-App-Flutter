@@ -4,13 +4,27 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:t_t_project/constants/colors.dart';
+import 'package:t_t_project/services/database_service.dart';
 
-class rateScreen extends StatefulWidget{
+import '../objects/product.dart';
+
+class rateScreen extends StatefulWidget {
+  final Product product;
+
+  const rateScreen({
+    Key? key,
+    required this.product,
+  }) : super(key: key);
+
   @override
   State<rateScreen> createState() => _rateScreenState();
 }
 
 class _rateScreenState extends State<rateScreen> {
+  double rating = 0;
+
+  final detailController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -36,19 +50,22 @@ class _rateScreenState extends State<rateScreen> {
                 'Your rating will be displayed in the product\'s reviews',
                 textAlign: TextAlign.center,
                 style: GoogleFonts.inter(
-                    fontSize: 16,
-                    color: Colors.white,
-                    textStyle: TextStyle()
-                ),
+                    fontSize: 16, color: Colors.white, textStyle: TextStyle()),
               ),
-              SizedBox(height: 20,),
+              SizedBox(
+                height: 20,
+              ),
               RatingBar(
                 itemSize: 45,
                 minRating: 1,
                 maxRating: 5,
-                initialRating: 4,
+                initialRating: 0,
                 allowHalfRating: true,
-                onRatingUpdate: (i) {},
+                onRatingUpdate: (i) {
+                  setState(() {
+                    rating = i;
+                  });
+                },
                 ratingWidget: RatingWidget(
                   full: Icon(
                     Icons.star,
@@ -64,27 +81,34 @@ class _rateScreenState extends State<rateScreen> {
                   ),
                 ),
               ),
-              SizedBox(height: 20,),
+              SizedBox(
+                height: 20,
+              ),
               SizedBox(
                 width: 90,
                 height: 70,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    padding:
-                    EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                    padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
                     backgroundColor: blackColor,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
                     side: BorderSide(color: Colors.white, width: 2),
                   ),
-                  onPressed: () {
-                  },
-                  child: Icon(Icons.camera_alt_rounded, color: Colors.white, size: 30,),
+                  onPressed: () {},
+                  child: Icon(
+                    Icons.camera_alt_rounded,
+                    color: Colors.white,
+                    size: 30,
+                  ),
                 ),
               ),
-              SizedBox(height: 20,),
+              SizedBox(
+                height: 20,
+              ),
               TextFormField(
+                controller: detailController,
                 cursorColor: Colors.white,
                 maxLines: 8,
                 style: TextStyle(fontSize: 16, color: Colors.white),
@@ -92,19 +116,19 @@ class _rateScreenState extends State<rateScreen> {
                   hintStyle: TextStyle(color: Colors.white, fontSize: 16),
                   hintText: 'Please share what you like about this product',
                   enabledBorder: OutlineInputBorder(
-                    borderSide:
-                    BorderSide(width: 1, color: Colors.white),
+                    borderSide: BorderSide(width: 1, color: Colors.white),
                     borderRadius: BorderRadius.circular(15),
                   ),
                   focusedBorder: OutlineInputBorder(
-                      borderSide:
-                      BorderSide(color: Colors.red, width: 1),
+                      borderSide: BorderSide(color: Colors.red, width: 1),
                       borderRadius: BorderRadius.circular(15)),
                 ),
               ),
-              SizedBox(height: 30,),
+              SizedBox(
+                height: 30,
+              ),
               Container(
-                padding:  EdgeInsets.symmetric(vertical: 10, horizontal: 30),
+                padding: EdgeInsets.symmetric(vertical: 10, horizontal: 30),
                 width: double.infinity,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
@@ -114,7 +138,19 @@ class _rateScreenState extends State<rateScreen> {
                       borderRadius: BorderRadius.circular(15),
                     ),
                   ),
-                  onPressed: () {},
+                  onPressed: () async {
+                    try{
+                      await DatabaseService().addComment(
+                          detailController.text,
+                          widget.product.id,
+                          rating,
+                          '');
+                    } catch (e){
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Error send comment: $e')),
+                      );
+                    }
+                  },
                   child: Text(
                     'Send',
                     style: GoogleFonts.inter(

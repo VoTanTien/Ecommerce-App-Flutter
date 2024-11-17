@@ -83,7 +83,22 @@ class _cartScreenState extends State<cartScreen> {
                   Row(
                     children: [
                       IconButton(
-                        onPressed: () {},
+                        onPressed: () async {
+                          final checkedCartItems = _cartItems.where((item) => item.cartProduct.isChecked).toList();
+                          if (checkedCartItems.isNotEmpty) {
+                            try {
+                              await DatabaseService().removeCheckedCartItems(checkedCartItems);
+                              setState(() {
+                                _cartItems.removeWhere((item) => item.cartProduct.isChecked);
+                              });
+                            } catch (e) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text("Error deleting items: $e")),
+                              );
+                            }
+
+                          }
+                        },
                         icon: Icon(Icons.delete_outline),
                         color: Colors.white,
                         iconSize: 30,

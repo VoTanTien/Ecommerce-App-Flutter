@@ -167,7 +167,6 @@ class _orderScreenState extends State<orderScreen> {
                                   MaterialPageRoute(builder: (context) => successScreen()),
                                 );
                               } catch (e) {
-                                // Handle the error, e.g., show a SnackBar or dialog
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(content: Text('Error creating order: $e')),
                                 );
