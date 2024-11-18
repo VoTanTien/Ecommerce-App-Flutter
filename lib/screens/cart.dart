@@ -109,7 +109,7 @@ class _cartScreenState extends State<cartScreen> {
                 ],
               ),
               Container(
-                height: 520,
+                height: 480,
                 width: double.infinity,
                 child: SingleChildScrollView(
                   child: _cartItems.isEmpty

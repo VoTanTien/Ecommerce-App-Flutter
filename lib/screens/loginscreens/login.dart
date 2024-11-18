@@ -52,7 +52,7 @@ class _loginScreenState extends State<loginScreen> {
                       'YOUR ACCOUNT FOR EVERYTHING RELATED WITH STORE',
                       textAlign: TextAlign.center,
                       style:
-                          GoogleFonts.gudea(fontSize: 24, color: Colors.white),
+                          GoogleFonts.gudea(fontSize: 18, color: Colors.white),
                     ),
                     SizedBox(height: size.height * 0.05),
                     Form(
@@ -142,7 +142,7 @@ class _loginScreenState extends State<loginScreen> {
                     Text(
                       'Privacy Policy and the Store Terms of Use',
                       style: GoogleFonts.inter(
-                          fontSize: 16,
+                          fontSize: 15,
                           color: Colors.red,
                           decoration: TextDecoration.underline,
                           decorationColor: Colors.redAccent),

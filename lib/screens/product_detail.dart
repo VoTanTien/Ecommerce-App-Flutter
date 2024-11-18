@@ -80,12 +80,12 @@ class _productDetailScreenState extends State<productDetailScreen> {
     listpara.add(Parameter('Size:', widget.product.size.toString() ?? ''));
     listpara
         .add(Parameter('Material:', widget.product.material.toString() ?? ''));
-    listpara.add(Parameter(
-        'Characteristic:', widget.product.characteristic.toString() ?? ''));
     if (widget.product.option.isNotEmpty) {
       listpara.add(Parameter(
-          'Accessory colors:', widget.product.characteristic.toString() ?? ''));
+          'Colors:', widget.product.option.toString() ?? ''));
     }
+    listpara.add(Parameter(
+        'Characteristic:', widget.product.characteristic.toString() ?? ''));
   }
 
   String getCombinedOptionString() {

@@ -50,6 +50,7 @@ class _orderScreenState extends State<orderScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
     return SafeArea(
       child: Scaffold(
         backgroundColor: blackColor,
@@ -68,7 +69,7 @@ class _orderScreenState extends State<orderScreen> {
         body: Column(
           children: [
             Container(
-              height: 700,
+              height: size.height * 0.79,
               width: double.infinity,
               child: SingleChildScrollView(
                 padding: EdgeInsets.symmetric(vertical: 0, horizontal: 20),
@@ -113,78 +114,73 @@ class _orderScreenState extends State<orderScreen> {
                 ),
               ),
             ),
-            Expanded(
-              child: Align(
-                alignment: Alignment.bottomCenter,
-                child: Container(
-                  padding: EdgeInsets.all(10),
-                  width: double.infinity,
-                  height: 68,
-                  color: Colors.white,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            Container(
+              padding: EdgeInsets.all(10),
+              width: double.infinity,
+              height: size.height * 0.1,
+              color: Colors.white,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  SizedBox(
+                    width: 10,
+                  ),
+                  Row(
                     children: [
-                      SizedBox(
-                        width: 10,
-                      ),
-                      Row(
+                      Column(
                         children: [
-                          Column(
-                            children: [
-                              Text(
-                                'Total Price:',
-                                style: GoogleFonts.inter(
-                                    fontSize: 14,
-                                    color: greyColor,
-                                    fontWeight: FontWeight.w500),
-                              ),
-                              Text(
-                                '\$ $total',
-                                style: GoogleFonts.inter(
-                                    fontSize: 18,
-                                    color: redColor,
-                                    fontWeight: FontWeight.w600),
-                              ),
-                            ],
+                          Text(
+                            'Total Price:',
+                            style: GoogleFonts.inter(
+                                fontSize: 14,
+                                color: greyColor,
+                                fontWeight: FontWeight.w500),
                           ),
-                          SizedBox(
-                            width: 10,
-                          ),
-                          ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              padding: EdgeInsets.symmetric(
-                                  vertical: 10, horizontal: 20),
-                              backgroundColor: redColor,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                            ),
-                            onPressed: () async{
-                              try {
-                                await DatabaseService().createOrdersFromCart(widget.cartItems);
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(builder: (context) => successScreen()),
-                                );
-                              } catch (e) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text('Error creating order: $e')),
-                                );
-                              }
-                            },
-                            child: Text(
-                              'Buy now',
-                              style: GoogleFonts.inter(
-                                  fontSize: 14,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w600),
-                            ),
+                          Text(
+                            '\$ $total',
+                            style: GoogleFonts.inter(
+                                fontSize: 18,
+                                color: redColor,
+                                fontWeight: FontWeight.w600),
                           ),
                         ],
                       ),
+                      SizedBox(
+                        width: 10,
+                      ),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          padding: EdgeInsets.symmetric(
+                              vertical: 10, horizontal: 20),
+                          backgroundColor: redColor,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        onPressed: () async{
+                          try {
+                            await DatabaseService().createOrdersFromCart(widget.cartItems);
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => successScreen()),
+                            );
+                          } catch (e) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Error creating order: $e')),
+                            );
+                          }
+                        },
+                        child: Text(
+                          'Buy now',
+                          style: GoogleFonts.inter(
+                              fontSize: 14,
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600),
+                        ),
+                      ),
                     ],
                   ),
-                ),
+                ],
               ),
             ),
           ],

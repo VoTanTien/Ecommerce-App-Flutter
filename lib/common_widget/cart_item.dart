@@ -29,6 +29,7 @@ class _CartItemState extends State<CartItem> {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
     return Stack(
       children: [
         Row(
@@ -48,7 +49,7 @@ class _CartItemState extends State<CartItem> {
                   }),
             ),
             Container(
-              width: 330,
+              width: size.width * 0.78,
               child: Card(
                 color: greyColor,
                 shape: RoundedRectangleBorder(
@@ -93,7 +94,7 @@ class _CartItemState extends State<CartItem> {
                             Text(
                               'Option: ${widget.cartItemData.cartProduct.option}',
                               style: GoogleFonts.inter(
-                                  fontSize: 13,
+                                  fontSize: 11,
                                   color: Color(0xFFA0A0A0),
                                   fontWeight: FontWeight.w400),
                             ),

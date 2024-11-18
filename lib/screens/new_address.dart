@@ -143,7 +143,7 @@ class _NewAddressState extends State<NewAddress> {
                   ),
                 ],
               ),
-              SizedBox( height: 300,),
+              SizedBox( height: 250,),
               Align(
                 alignment: Alignment.bottomCenter,
                 child: Container(

@@ -94,7 +94,7 @@ class _signupScreenState extends State<signupScreen> {
                   key: _formKey,
                   child: Column(
                     children: [
-                      Image(image: AssetImage(logonew), height: size.height * 0.2),
+                      Image(image: AssetImage(logonew), height: size.height * 0.18),
                       SizedBox(height: size.height * 0.02),
                       Form(
                         child: Column(
@@ -252,14 +252,14 @@ class _signupScreenState extends State<signupScreen> {
                                   child: RichText(
                                     text: TextSpan(
                                         style: GoogleFonts.inter(
-                                            fontSize: 16, color: Colors.white),
+                                            fontSize: 14, color: Colors.white),
                                         children: <TextSpan>[
                                           TextSpan(text: 'I accept the '),
                                           TextSpan(
                                             text:
                                                 'Privacy Policy and the Store Terms of Use ',
                                             style: GoogleFonts.inter(
-                                                fontSize: 16,
+                                                fontSize: 14,
                                                 color: Colors.red,
                                                 decoration:
                                                     TextDecoration.underline,
