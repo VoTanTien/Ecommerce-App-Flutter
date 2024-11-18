@@ -4,19 +4,39 @@ import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:t_t_project/constants/colors.dart';
 import 'package:t_t_project/objects/address.dart';
-import 'package:t_t_project/objects/address_manager.dart';
+import 'package:t_t_project/objects/user.dart';
+import 'package:t_t_project/services/database_service.dart';
 
-class NewAddress extends StatefulWidget{
+class NewAddress extends StatefulWidget {
   @override
   State<NewAddress> createState() => _NewAddressState();
 }
 
 class _NewAddressState extends State<NewAddress> {
-  bool isSwitched = false;
-  final nameControler = TextEditingController();
-  final phoneControler = TextEditingController();
-  final addressControler = TextEditingController();
-  AddressManager addressManager = AddressManager();
+  bool isDefault = false;
+  final nameController = TextEditingController();
+  final phoneController = TextEditingController();
+  final addressController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
+
+  Future<void> _loadUserData() async {
+    final databaseService = DatabaseService();
+    try {
+      final userData = await databaseService.getUserData();
+      setState(() {
+        nameController.text = userData['name']!;
+        phoneController.text = userData['phone']!;
+      });
+    } catch (e) {
+      print('error load user data: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -39,31 +59,29 @@ class _NewAddressState extends State<NewAddress> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-               Text(
-                  'Contact',
-                  style: GoogleFonts.inter(
-                      fontSize: 22,
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600),
-                ),
+              Text(
+                'Contact',
+                style: GoogleFonts.inter(
+                    fontSize: 22,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600),
+              ),
               SizedBox(
                 height: 10,
               ),
               TextFormField(
                 cursorColor: Colors.white,
-                controller: nameControler,
+                controller: nameController,
                 style: TextStyle(fontSize: 16, color: Colors.white),
                 decoration: InputDecoration(
                   enabledBorder: OutlineInputBorder(
-                    borderSide:
-                    BorderSide(width: 1, color: Colors.white),
+                    borderSide: BorderSide(width: 1, color: Colors.white),
                     borderRadius: BorderRadius.circular(15),
                   ),
                   labelText: 'Name',
                   labelStyle: TextStyle(color: Colors.white),
                   focusedBorder: OutlineInputBorder(
-                      borderSide:
-                      BorderSide(color: Colors.red, width: 1),
+                      borderSide: BorderSide(color: Colors.red, width: 1),
                       borderRadius: BorderRadius.circular(15)),
                 ),
               ),
@@ -72,19 +90,17 @@ class _NewAddressState extends State<NewAddress> {
               ),
               TextFormField(
                 cursorColor: Colors.white,
-                controller: phoneControler,
+                controller: phoneController,
                 style: TextStyle(fontSize: 16, color: Colors.white),
                 decoration: InputDecoration(
                   enabledBorder: OutlineInputBorder(
-                    borderSide:
-                    BorderSide(width: 1, color: Colors.white),
+                    borderSide: BorderSide(width: 1, color: Colors.white),
                     borderRadius: BorderRadius.circular(15),
                   ),
                   labelText: 'Phone Number',
                   labelStyle: TextStyle(color: Colors.white),
                   focusedBorder: OutlineInputBorder(
-                      borderSide:
-                      BorderSide(color: Colors.red, width: 1),
+                      borderSide: BorderSide(color: Colors.red, width: 1),
                       borderRadius: BorderRadius.circular(15)),
                 ),
               ),
@@ -92,30 +108,28 @@ class _NewAddressState extends State<NewAddress> {
                 height: 10,
               ),
               Text(
-                  'Address',
-                  style: GoogleFonts.inter(
-                      fontSize: 22,
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600),
-                ),
+                'Address',
+                style: GoogleFonts.inter(
+                    fontSize: 22,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600),
+              ),
               SizedBox(
                 height: 10,
               ),
               TextFormField(
                 cursorColor: Colors.white,
-                controller: addressControler,
+                controller: addressController,
                 style: TextStyle(fontSize: 16, color: Colors.white),
                 decoration: InputDecoration(
                   enabledBorder: OutlineInputBorder(
-                    borderSide:
-                    BorderSide(width: 1, color: Colors.white),
+                    borderSide: BorderSide(width: 1, color: Colors.white),
                     borderRadius: BorderRadius.circular(15),
                   ),
                   labelText: 'Address',
                   labelStyle: TextStyle(color: Colors.white),
                   focusedBorder: OutlineInputBorder(
-                      borderSide:
-                      BorderSide(color: Colors.red, width: 1),
+                      borderSide: BorderSide(color: Colors.red, width: 1),
                       borderRadius: BorderRadius.circular(15)),
                 ),
               ),
@@ -133,17 +147,19 @@ class _NewAddressState extends State<NewAddress> {
                         fontWeight: FontWeight.w600),
                   ),
                   Switch.adaptive(
-                    value: isSwitched,
+                    value: isDefault,
                     onChanged: (value) {
                       setState(() {
-                        isSwitched = value;
+                        isDefault = value;
                       });
                     },
                     activeColor: redColor,
                   ),
                 ],
               ),
-              SizedBox( height: 250,),
+              SizedBox(
+                height: 250,
+              ),
               Align(
                 alignment: Alignment.bottomCenter,
                 child: Container(
@@ -157,9 +173,21 @@ class _NewAddressState extends State<NewAddress> {
                         borderRadius: BorderRadius.circular(15),
                       ),
                     ),
-                    onPressed: () {
-                      addressManager.addAddress(Address(nameControler.text, phoneControler.text, addressControler.text, false));
-                      Navigator.pop(context);
+                    onPressed: () async {
+                      try {
+                        if (addressController.text.isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content: Text('Please enter new address')),
+                          );
+                        } else {
+                          await DatabaseService().addAddress(
+                              nameController.text,
+                              phoneController.text,
+                              addressController.text,
+                              isDefault);
+                        }
+                      } catch (e) {}
                     },
                     child: Text(
                       'COMPLETE',

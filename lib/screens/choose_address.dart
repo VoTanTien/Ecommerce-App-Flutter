@@ -4,25 +4,40 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:t_t_project/common_widget/address_item.dart';
 import 'package:t_t_project/constants/colors.dart';
 import 'package:t_t_project/objects/address.dart';
-import 'package:t_t_project/objects/address_manager.dart';
 import 'package:t_t_project/screens/new_address.dart';
+import 'package:t_t_project/services/database_service.dart';
 
 
 
 class AddressScreen extends StatefulWidget{
+  final Address? initiallySelectedAddress;
+
+  const AddressScreen({Key? key, this.initiallySelectedAddress}) : super(key: key);
+
   @override
   State<AddressScreen> createState() => _AddressScreenState();
 }
 
 class _AddressScreenState extends State<AddressScreen> {
-  AddressManager addressManager = AddressManager();
+  List<Address> _addresses = [];
+  String? _selectedAddressId;
+
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    setState(() {
-      addressManager = new AddressManager();
-    });
+    _loadAddresses();
+    _selectedAddressId = widget.initiallySelectedAddress?.id;
+  }
+
+  Future<void> _loadAddresses() async{
+    try{
+      final addresses = await DatabaseService().getAddressesForUser();
+      setState(() {
+        _addresses = addresses;
+      });
+    }catch (e){
+      print('Error load addresses: $e');
+    }
   }
 
   @override
@@ -51,15 +66,19 @@ class _AddressScreenState extends State<AddressScreen> {
               child: Column(
                 children: [
                   Wrap(
-                    spacing: 0,
                     runSpacing: 10,
-                    children: addressManager.addresses.map((e) => AddressItem(
-                      name: e.name,
-                      phone: e.phone,
-                      address: e.address,
-                      isDefault: e.isDefault,
-                    ),
-                    ).toList()
+                    children: _addresses.map((address) {
+                      return AddressItem(
+                        address: address,
+                        isSelected: address.id == _selectedAddressId,
+                        onTap: () {
+                          setState(() {
+                            _selectedAddressId = address.id;
+                          });
+                          Navigator.pop(context, address); // Return selected address
+                        },
+                      );
+                    }).toList(),
                   ),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(

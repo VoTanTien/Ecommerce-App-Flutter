@@ -1,10 +1,14 @@
 class Address {
+  String id;
   String name;
   String phone;
   String address;
   bool isDefault;
 
-  Address(this.name, this.phone, this.address, this.isDefault);
-
+  Address(
+      {required this.id,
+      required this.name,
+      required this.phone,
+      required this.address,
+      required this.isDefault});
 }
-

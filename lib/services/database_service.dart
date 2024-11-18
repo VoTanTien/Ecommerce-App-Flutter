@@ -4,6 +4,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:t_t_project/common_widget/assessment_item.dart';
+import 'package:t_t_project/objects/address.dart';
 import 'package:t_t_project/objects/assessment_item_data.dart';
 import 'package:t_t_project/objects/category.dart';
 
@@ -15,7 +16,7 @@ import '../objects/product.dart';
 import '../objects/user.dart';
 import '../objects/comment.dart';
 
-class DatabaseService{
+class DatabaseService {
   final _databaseRef = FirebaseDatabase.instance.ref();
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
@@ -59,7 +60,6 @@ class DatabaseService{
     }
   }
 
-  // Helper function to fetch user data by ID
   Future<UserData?> _getUserDataById(String userId) async {
     try {
       final snapshot = await _databaseRef.child('Users/$userId').get();
@@ -90,7 +90,8 @@ class DatabaseService{
 
       if (snapshot.exists) {
         final commentList = <CommentData>[];
-        final userFutures = <Future<UserData?>>[]; // Store futures for user data
+        final userFutures = <Future<UserData?>>[
+        ]; // Store futures for user data
 
         for (final child in snapshot.children) {
           final commentData = Map<String, dynamic>.from(child.value as Map);
@@ -101,7 +102,8 @@ class DatabaseService{
 
           // Create comment object with temporary userName (will be updated later)
           commentList.add(CommentData(
-            userName: '', // Placeholder, will be updated
+            userName: '',
+            // Placeholder, will be updated
             productId: commentData['productid']?.toInt() ?? 0,
             rate: (commentData['rate'] as num?)?.toDouble() ?? 0.0,
             title: commentData['title'] ?? '',
@@ -171,9 +173,11 @@ class DatabaseService{
             .get();
 
         if (productSnapshot.exists) {
-          final productData = Map<String, dynamic>.from(productSnapshot.value as Map);
+          final productData = Map<String, dynamic>.from(
+              productSnapshot.value as Map);
           final product = Product.fromMap(productData, productId);
-          cartItemsData.add(CartItemData(cartProduct: cartProduct, product: product));
+          cartItemsData.add(
+              CartItemData(cartProduct: cartProduct, product: product));
         }
       }
 
@@ -184,13 +188,15 @@ class DatabaseService{
     }
   }
 
-  Future<void> createOrdersFromCart(List<CartItemData> cartItems) async {
+  Future<void> createOrdersFromCart(List<CartItemData> cartItems, String addressId) async {
     try {
       final uid = _auth.currentUser?.uid;
       if (uid == null) return;
 
       final ordersRef = _databaseRef.child('Orders');
-      final newOrderKeyBase = ordersRef.push().key;  // Generate a base key
+      final newOrderKeyBase = ordersRef
+          .push()
+          .key; // Generate a base key
 
       final now = DateTime.now();
       final date = DateFormat('yyyy-MM-dd').format(now);
@@ -200,10 +206,12 @@ class DatabaseService{
         final newOrderKey = '$newOrderKeyBase-$i';
         await ordersRef.child(newOrderKey).set({
           'uid': uid,
+          'addressid': addressId,
           'productid': cartItems[i].product.id,
           'quantity': cartItems[i].cartProduct.quantity,
           'option': cartItems[i].cartProduct.option,
-          'price': cartItems[i].product.discountPrice ?? cartItems[i].product.price,
+          'price': cartItems[i].product.discountPrice ??
+              cartItems[i].product.price,
           'date': date,
           'time': time,
         });
@@ -218,7 +226,8 @@ class DatabaseService{
     }
   }
 
-  Future<void> addToCart(int productId, int quantity, String option, BuildContext context) async {
+  Future<void> addToCart(int productId, int quantity, String option,
+      BuildContext context) async {
     try {
       final uid = _auth.currentUser?.uid;
       if (uid == null) return;
@@ -226,13 +235,17 @@ class DatabaseService{
       String compositeKey = "$uid-$productId-$option";
 
       final cartRef = _databaseRef.child('Carts');
-      final existingCartsSnapshot = await cartRef.orderByChild('uid').equalTo(uid).once();
+      final existingCartsSnapshot = await cartRef.orderByChild('uid').equalTo(
+          uid).once();
 
       if (existingCartsSnapshot.snapshot.exists) {
         bool itemExists = false;
-        for (final cartDataSnapshot in existingCartsSnapshot.snapshot.children) {
-          final cartData = Map<String, dynamic>.from(cartDataSnapshot.value as Map);
-          if (cartData['productid'] == productId && cartData['option'] == option) {
+        for (final cartDataSnapshot in existingCartsSnapshot.snapshot
+            .children) {
+          final cartData = Map<String, dynamic>.from(
+              cartDataSnapshot.value as Map);
+          if (cartData['productid'] == productId &&
+              cartData['option'] == option) {
             itemExists = true;
 
             Fluttertoast.showToast(
@@ -267,7 +280,9 @@ class DatabaseService{
           );
         }
       } else {
-        final newCartKey = cartRef.push().key;
+        final newCartKey = cartRef
+            .push()
+            .key;
         await cartRef.child(newCartKey!).set({
           'uid': uid,
           'productid': productId,
@@ -284,15 +299,13 @@ class DatabaseService{
           fontSize: 16,
         );
       }
-
     } catch (e) {
       print("Error adding to cart: $e");
-
-
     }
   }
 
-  Future<void> removeCheckedCartItems(List<CartItemData> checkedCartItems) async {
+  Future<void> removeCheckedCartItems(
+      List<CartItemData> checkedCartItems) async {
     try {
       final uid = _auth.currentUser?.uid;
       if (uid == null) return;
@@ -309,16 +322,17 @@ class DatabaseService{
       }
     } catch (e) {
       print("Error removing checked cart items: $e");
-
     }
   }
 
-  Future<List<OrderItemData>> getOrderItems() async { // Takes uid as an argument
+  Future<List<OrderItemData>> getOrderItems() async {
+    // Takes uid as an argument
     try {
       final uid = _auth.currentUser?.uid;
       if (uid == null) return [];
 
-      final orderProducts = await _getOrderProductsForUser(uid); // Use provided uid
+      final orderProducts = await _getOrderProductsForUser(
+          uid); // Use provided uid
       if (orderProducts.isEmpty) return [];
 
       final orderItemsData = <OrderItemData>[];
@@ -329,9 +343,11 @@ class DatabaseService{
             .get();
 
         if (productSnapshot.exists) {
-          final productData = Map<String, dynamic>.from(productSnapshot.value as Map);
+          final productData = Map<String, dynamic>.from(
+              productSnapshot.value as Map);
           final product = Product.fromMap(productData, productId);
-          orderItemsData.add(OrderItemData(orderProduct: orderProduct, product: product));
+          orderItemsData.add(
+              OrderItemData(orderProduct: orderProduct, product: product));
         }
       }
 
@@ -353,7 +369,8 @@ class DatabaseService{
       if (ordersSnapshot.exists) {
         final orderProducts = <OrderProduct>[];
         for (final child in ordersSnapshot.children) {
-          final orderProductData = Map<String, dynamic>.from(child.value as Map);
+          final orderProductData = Map<String, dynamic>.from(
+              child.value as Map);
           orderProducts.add(OrderProduct(
             date: orderProductData['date'] ?? '',
             uid: orderProductData['uid'] ?? '',
@@ -373,14 +390,16 @@ class DatabaseService{
     }
   }
 
-  Future<List<AssessmentItemData>> getAssessmentItems() async { // Takes uid as an argument
+  Future<List<AssessmentItemData>> getAssessmentItems() async {
+    // Takes uid as an argument
     try {
       final uid = _auth.currentUser?.uid;
       if (uid == null) return [];
       final userData = await _getUserDataById(uid);
       final userName = userData?.name;
 
-      final comments = await _getCommentForUser(uid, userName!); // Use provided uid
+      final comments = await _getCommentForUser(
+          uid, userName!); // Use provided uid
       if (comments.isEmpty) return [];
 
       final assessmentItemsData = <AssessmentItemData>[];
@@ -391,9 +410,11 @@ class DatabaseService{
             .get();
 
         if (productSnapshot.exists) {
-          final productData = Map<String, dynamic>.from(productSnapshot.value as Map);
+          final productData = Map<String, dynamic>.from(
+              productSnapshot.value as Map);
           final product = Product.fromMap(productData, productId);
-          assessmentItemsData.add(AssessmentItemData(comment: comment, product: product));
+          assessmentItemsData.add(
+              AssessmentItemData(comment: comment, product: product));
         }
       }
 
@@ -404,7 +425,8 @@ class DatabaseService{
     }
   }
 
-  Future<List<CommentData>> _getCommentForUser(String uid, String userName) async {
+  Future<List<CommentData>> _getCommentForUser(String uid,
+      String userName) async {
     try {
       final commentsSnapshot = await _databaseRef
           .child('Comments')
@@ -434,17 +456,17 @@ class DatabaseService{
     }
   }
 
-  Future<List<Category>> getCategory() async{
+  Future<List<Category>> getCategory() async {
     try {
       final categorySnapshot = await _databaseRef.child('Size').get();
-      if(categorySnapshot.exists){
+      if (categorySnapshot.exists) {
         final categorys = <Category>[];
-        for (final child in categorySnapshot.children){
+        for (final child in categorySnapshot.children) {
           final categoryData = Map<String, dynamic>.from(child.value as Map);
-          categorys.add(Category(title: categoryData['title']??''));
+          categorys.add(Category(title: categoryData['title'] ?? ''));
         }
         return categorys;
-      } else{
+      } else {
         return [];
       }
     } catch (e) {
@@ -453,7 +475,8 @@ class DatabaseService{
     }
   }
 
-  Future<void> addComment(String title, int productId, double rate, String image ) async {
+  Future<void> addComment(String title, int productId, double rate,
+      String image) async {
     try {
       final uid = _auth.currentUser?.uid;
       if (uid == null) {
@@ -472,7 +495,7 @@ class DatabaseService{
           'title': title,
           'image': image,
         });
-      } else{
+      } else {
         await commentsRef.child(newCommentKey!).set({
           'uid': uid,
           'productid': productId,
@@ -489,13 +512,137 @@ class DatabaseService{
         textColor: Colors.white,
         fontSize: 16,
       );
-
     } catch (e) {
       print("Error adding comment: $e");
       rethrow;
     }
   }
 
+  Future<List<Address>> getAddressesForUser() async {
+    try {
+      final uid = _auth.currentUser?.uid;
+      if (uid == null) {
+        return [];
+      }
+      final addressesSnapshot = await _databaseRef
+          .child('Address')
+          .orderByChild('uid')
+          .equalTo(uid)
+          .get();
+      if (addressesSnapshot.exists) {
+        final addresses = <Address>[];
+        for (final child in addressesSnapshot.children) {
+          final addressData = Map<String, dynamic>.from(child.value as Map);
+          addresses.add(Address(
+              id: child.key!.toString(),
+              name: addressData['name'] ?? '',
+              phone: addressData['phone'] ?? '',
+              address: addressData['address'] ?? '',
+              isDefault: addressData['isDefault'] ?? false,)
+          );
+        }
+        return addresses;
+      } else{
+        return [];
+      }
+    } catch (e) {
+      print("Error fetching addresses: $e");
+      rethrow;
+    }
+  }
 
+  Future<Address?> getDefaultAddressForUser() async {
+    try {
+      final uid = _auth.currentUser?.uid;
+      if (uid == null) {
+        return null;
+      }
+
+      final addressesSnapshot = await _databaseRef
+          .child('Address')
+          .orderByChild('uid')
+          .equalTo(uid)
+          .once();
+
+      if (addressesSnapshot.snapshot.exists) {
+        for (final child in addressesSnapshot.snapshot.children) {
+          final addressData = Map<String, dynamic>.from(child.value as Map);
+          if (addressData['isDefault'] == true) {
+            return Address(
+              id: child.key!.toString(),
+              name: addressData['name'] ?? '',
+              phone: addressData['phone'] ?? '',
+              address: addressData['address'] ?? '',
+              isDefault: addressData['isDefault'] ?? false,
+            );
+          }
+        }
+        // No default address found
+        return null;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      print("Error fetching default address: $e");
+      return null; // Return null in case of error
+    }
+  }
+
+
+  Future<void> _resetDefaultAddresses(String uid) async {
+    try {
+      final addressRef = _databaseRef.child('Address');
+      final query = addressRef.orderByChild('uid').equalTo(uid);
+      final snapshot = await query.get();
+
+      if (snapshot.exists) {
+        for (final data in snapshot.children) {
+          await data.ref.update({'isDefault': false});
+        }
+      }
+    } catch (e) {
+      print("Error resetting default addresses: $e");
+      // You might want to rethrow the error or handle it differently
+      rethrow;
+    }
+  }
+
+  Future<void> addAddress(String name, String phone, String address,
+      bool isDefault) async {
+    try {
+      final uid = _auth.currentUser?.uid;
+      if (uid == null) {
+        return;
+      }
+
+      if (isDefault) {
+        await _resetDefaultAddresses(uid);
+      }
+
+      final addressRef = _databaseRef.child('Address');
+      final newAddressKey = addressRef
+          .push()
+          .key;
+      await addressRef.child(newAddressKey!).set({
+        'uid': uid,
+        'name': name,
+        'phone': phone,
+        'address': address,
+        'isDefault': isDefault,
+      });
+
+      Fluttertoast.showToast(
+        msg: 'Add new address successfully!',
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.SNACKBAR,
+        backgroundColor: Colors.black54,
+        textColor: Colors.white,
+        fontSize: 16,
+      );
+    } catch (e) {
+      print("Error adding address: $e");
+      rethrow;
+    }
+  }
 
 }

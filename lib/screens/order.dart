@@ -6,7 +6,6 @@ import 'package:t_t_project/common_widget/order_item.dart';
 import 'package:t_t_project/constants/colors.dart';
 import 'package:t_t_project/constants/image_strings.dart';
 import 'package:t_t_project/objects/address.dart';
-import 'package:t_t_project/objects/address_manager.dart';
 import 'package:t_t_project/screens/choose_address.dart';
 import 'package:t_t_project/screens/order.dart';
 import 'package:t_t_project/screens/success.dart';
@@ -27,11 +26,24 @@ class _orderScreenState extends State<orderScreen> {
   int shipFee = 10;
   int productPrice = 0;
   int total = 0;
+  Address? _selectedAddress;
 
   @override
   void initState() {
     super.initState();
-    _calculateTotal(); // Calculate total on initialization.
+    _calculateTotal();
+    _loadDefaultAddress();
+  }
+
+  Future<void> _loadDefaultAddress() async {
+    try {
+      final address = await DatabaseService().getDefaultAddressForUser();
+      setState(() {
+        _selectedAddress = address!;
+      });
+    } catch (e) {
+      print('Error load address: $e');
+    }
   }
 
   void _calculateTotal() {
@@ -76,12 +88,83 @@ class _orderScreenState extends State<orderScreen> {
                 child: Column(
                   children: [
                     //display address
-                    AddressField(),
+                    _selectedAddress == null
+                        ? const Center(child: CircularProgressIndicator())
+                        : ListTile(
+                            title: Text('Delivery address',
+                                style: GoogleFonts.inter(
+                                  fontSize: 22,
+                                  color: Colors.white,
+                                )),
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                IntrinsicHeight(
+                                  child: Row(
+                                    children: [
+                                      Text(
+                                        _selectedAddress!.name,
+                                        style: GoogleFonts.inter(
+                                          fontSize: 14,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                      VerticalDivider(
+                                        color: Colors.white,
+                                        thickness: 1,
+                                        width: 15,
+                                      ),
+                                      Text(
+                                        _selectedAddress!.phone,
+                                        style: GoogleFonts.inter(
+                                          fontSize: 14,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Text(
+                                  _selectedAddress!.address,
+                                  style: GoogleFonts.inter(
+                                    fontSize: 14,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            trailing: Icon(
+                              Icons.arrow_forward_ios_rounded,
+                              color: Colors.white,
+                            ),
+                            leading: Icon(
+                              Icons.location_on_outlined,
+                              color: Colors.white,
+                              size: 35,
+                            ),
+                            onTap: () async {
+                              final selectedAddress = await Navigator.push<Address>(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => AddressScreen(
+                                    initiallySelectedAddress: _selectedAddress,
+                                  ),
+                                ),
+                              );
+                              print('selectedAddress: ${selectedAddress?.id}');
+                              if (selectedAddress != null) {
+                                setState(() {
+                                  _selectedAddress = selectedAddress;
+                                });
+                              }
+                            },
+                          ),
                     Divider(
                       color: Colors.white,
                       height: 20,
                       thickness: 1,
                     ),
+
                     // Display oder items
                     Wrap(
                       spacing: 0,
@@ -157,16 +240,19 @@ class _orderScreenState extends State<orderScreen> {
                             borderRadius: BorderRadius.circular(10),
                           ),
                         ),
-                        onPressed: () async{
+                        onPressed: () async {
                           try {
-                            await DatabaseService().createOrdersFromCart(widget.cartItems);
+                            await DatabaseService()
+                                .createOrdersFromCart(widget.cartItems, _selectedAddress!.id);
                             Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (context) => successScreen()),
+                              MaterialPageRoute(
+                                  builder: (context) => successScreen()),
                             );
                           } catch (e) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('Error creating order: $e')),
+                              SnackBar(
+                                  content: Text('Error creating order: $e')),
                             );
                           }
                         },
@@ -288,30 +374,18 @@ class _PaymentMethodState extends State<PaymentMethod> {
 
 //---------------
 class AddressField extends StatefulWidget {
+  final Address defaultAddress;
+
+  const AddressField({
+    Key? key,
+    required this.defaultAddress,
+  }) : super(key: key);
+
   @override
   State<AddressField> createState() => _AddressFieldState();
 }
 
 class _AddressFieldState extends State<AddressField> {
-  AddressManager addressManager = AddressManager();
-
-  late Address a;
-
-  Address getDefault() {
-    for (var e in addressManager.addresses) {
-      if (e.isDefault == true) {
-        return e;
-      }
-    }
-    return addressManager.addresses[0];
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    a = getDefault();
-  }
-
   @override
   Widget build(BuildContext context) {
     return ListTile(
@@ -327,7 +401,7 @@ class _AddressFieldState extends State<AddressField> {
             child: Row(
               children: [
                 Text(
-                  a.name,
+                  widget.defaultAddress.name,
                   style: GoogleFonts.inter(
                     fontSize: 14,
                     color: Colors.white,
@@ -339,7 +413,7 @@ class _AddressFieldState extends State<AddressField> {
                   width: 15,
                 ),
                 Text(
-                  a.phone,
+                  widget.defaultAddress.phone,
                   style: GoogleFonts.inter(
                     fontSize: 14,
                     color: Colors.white,
@@ -349,7 +423,7 @@ class _AddressFieldState extends State<AddressField> {
             ),
           ),
           Text(
-            a.address,
+            widget.defaultAddress.address,
             style: GoogleFonts.inter(
               fontSize: 14,
               color: Colors.white,
