@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -5,6 +6,7 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:t_t_project/constants/colors.dart';
 import 'package:t_t_project/services/database_service.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../objects/product.dart';
 
@@ -22,11 +24,30 @@ class rateScreen extends StatefulWidget {
 
 class _rateScreenState extends State<rateScreen> {
   double rating = 0;
-
   final detailController = TextEditingController();
+  late ImagePicker imagePicker;
+  File? image;
+
+  @override
+  void initState() {
+    super.initState();
+    imagePicker = ImagePicker();
+  }
+
+  chooseImage() async {
+    XFile? selectedImage =
+        await imagePicker.pickImage(source: ImageSource.gallery);
+    if (selectedImage != null) {
+      image = File(selectedImage.path);
+      setState(() {
+        image;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
     return SafeArea(
       child: Scaffold(
         backgroundColor: blackColor,
@@ -85,8 +106,8 @@ class _rateScreenState extends State<rateScreen> {
                 height: 20,
               ),
               SizedBox(
-                width: 90,
-                height: 70,
+                width: image == null ? 90: size.width/2,
+                height: image == null ? 70: size.height/3,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
@@ -96,12 +117,22 @@ class _rateScreenState extends State<rateScreen> {
                     ),
                     side: BorderSide(color: Colors.white, width: 2),
                   ),
-                  onPressed: () {},
-                  child: Icon(
-                    Icons.camera_alt_rounded,
-                    color: Colors.white,
-                    size: 30,
-                  ),
+                  onPressed: () {
+                    chooseImage();
+                  },
+                  child: image == null
+                      ? Icon(
+                          Icons.camera_alt_rounded,
+                          color: Colors.white,
+                          size: 30,
+                        )
+                      : ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: Image.file(
+                            image!,
+                            // fit: BoxFit.cover,
+                          ),
+                        ),
                 ),
               ),
               SizedBox(
@@ -139,13 +170,14 @@ class _rateScreenState extends State<rateScreen> {
                     ),
                   ),
                   onPressed: () async {
-                    try{
+                    String? imageUrl;
+                    if (image != null) {
+                      imageUrl = await DatabaseService().uploadImageToStorage(image!);
+                    }
+                    try {
                       await DatabaseService().addComment(
-                          detailController.text,
-                          widget.product.id,
-                          rating,
-                          '');
-                    } catch (e){
+                          detailController.text, widget.product.id, rating, imageUrl ?? '',);
+                    } catch (e) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text('Error send comment: $e')),
                       );

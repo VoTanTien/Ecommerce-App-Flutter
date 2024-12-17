@@ -1,5 +1,10 @@
+import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:path/path.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
@@ -19,6 +24,7 @@ import '../objects/comment.dart';
 class DatabaseService {
   final _databaseRef = FirebaseDatabase.instance.ref();
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final _storageRef = FirebaseStorage.instance.ref();
 
   Future<Map<String, String>> getUserData() async {
     try {
@@ -83,19 +89,18 @@ class DatabaseService {
   Future<List<CommentData>> getCommentsForProduct(int productId) async {
     try {
       final commentsRef = _databaseRef.child('Comments');
-      final snapshot = await commentsRef
-          .orderByChild('productid')
-          .equalTo(productId)
-          .get();
+      final snapshot =
+          await commentsRef.orderByChild('productid').equalTo(productId).get();
 
       if (snapshot.exists) {
         final commentList = <CommentData>[];
-        final userFutures = <Future<UserData?>>[
-        ]; // Store futures for user data
+        final userFutures =
+            <Future<UserData?>>[]; // Store futures for user data
 
         for (final child in snapshot.children) {
           final commentData = Map<String, dynamic>.from(child.value as Map);
-          final userId = commentData['uid']; // Assuming you store userId in comments
+          final userId =
+              commentData['uid']; // Assuming you store userId in comments
 
           // Fetch user data for each comment concurrently
           userFutures.add(_getUserDataById(userId));
@@ -107,7 +112,7 @@ class DatabaseService {
             productId: commentData['productid']?.toInt() ?? 0,
             rate: (commentData['rate'] as num?)?.toDouble() ?? 0.0,
             title: commentData['title'] ?? '',
-            image: commentData['image']?.toString(),
+            image: commentData['image'].toString(),
           ));
         }
 
@@ -168,16 +173,15 @@ class DatabaseService {
       final cartItemsData = <CartItemData>[];
       for (final cartProduct in cartProducts) {
         final productId = cartProduct.productId;
-        final productSnapshot = await _databaseRef
-            .child('Products/$productId')
-            .get();
+        final productSnapshot =
+            await _databaseRef.child('Products/$productId').get();
 
         if (productSnapshot.exists) {
-          final productData = Map<String, dynamic>.from(
-              productSnapshot.value as Map);
+          final productData =
+              Map<String, dynamic>.from(productSnapshot.value as Map);
           final product = Product.fromMap(productData, productId);
-          cartItemsData.add(
-              CartItemData(cartProduct: cartProduct, product: product));
+          cartItemsData
+              .add(CartItemData(cartProduct: cartProduct, product: product));
         }
       }
 
@@ -188,15 +192,14 @@ class DatabaseService {
     }
   }
 
-  Future<void> createOrdersFromCart(List<CartItemData> cartItems, String addressId) async {
+  Future<void> createOrdersFromCart(
+      List<CartItemData> cartItems, String addressId) async {
     try {
       final uid = _auth.currentUser?.uid;
       if (uid == null) return;
 
       final ordersRef = _databaseRef.child('Orders');
-      final newOrderKeyBase = ordersRef
-          .push()
-          .key; // Generate a base key
+      final newOrderKeyBase = ordersRef.push().key; // Generate a base key
 
       final now = DateTime.now();
       final date = DateFormat('yyyy-MM-dd').format(now);
@@ -210,8 +213,8 @@ class DatabaseService {
           'productid': cartItems[i].product.id,
           'quantity': cartItems[i].cartProduct.quantity,
           'option': cartItems[i].cartProduct.option,
-          'price': cartItems[i].product.discountPrice ??
-              cartItems[i].product.price,
+          'price':
+              cartItems[i].product.discountPrice ?? cartItems[i].product.price,
           'date': date,
           'time': time,
         });
@@ -219,15 +222,14 @@ class DatabaseService {
 
       // After creating orders, you might want to clear the cart:
       // await clearCart(uid);  // Implement this function if needed.
-
     } catch (e) {
       print("Error creating orders: $e");
       rethrow; // Re-throw the error so the calling function can handle it
     }
   }
 
-  Future<void> addToCart(int productId, int quantity, String option,
-      BuildContext context) async {
+  Future<void> addToCart(
+      int productId, int quantity, String option, BuildContext context) async {
     try {
       final uid = _auth.currentUser?.uid;
       if (uid == null) return;
@@ -235,15 +237,15 @@ class DatabaseService {
       String compositeKey = "$uid-$productId-$option";
 
       final cartRef = _databaseRef.child('Carts');
-      final existingCartsSnapshot = await cartRef.orderByChild('uid').equalTo(
-          uid).once();
+      final existingCartsSnapshot =
+          await cartRef.orderByChild('uid').equalTo(uid).once();
 
       if (existingCartsSnapshot.snapshot.exists) {
         bool itemExists = false;
-        for (final cartDataSnapshot in existingCartsSnapshot.snapshot
-            .children) {
-          final cartData = Map<String, dynamic>.from(
-              cartDataSnapshot.value as Map);
+        for (final cartDataSnapshot
+            in existingCartsSnapshot.snapshot.children) {
+          final cartData =
+              Map<String, dynamic>.from(cartDataSnapshot.value as Map);
           if (cartData['productid'] == productId &&
               cartData['option'] == option) {
             itemExists = true;
@@ -280,9 +282,7 @@ class DatabaseService {
           );
         }
       } else {
-        final newCartKey = cartRef
-            .push()
-            .key;
+        final newCartKey = cartRef.push().key;
         await cartRef.child(newCartKey!).set({
           'uid': uid,
           'productid': productId,
@@ -331,23 +331,22 @@ class DatabaseService {
       final uid = _auth.currentUser?.uid;
       if (uid == null) return [];
 
-      final orderProducts = await _getOrderProductsForUser(
-          uid); // Use provided uid
+      final orderProducts =
+          await _getOrderProductsForUser(uid); // Use provided uid
       if (orderProducts.isEmpty) return [];
 
       final orderItemsData = <OrderItemData>[];
       for (final orderProduct in orderProducts) {
         final productId = orderProduct.productId;
-        final productSnapshot = await _databaseRef
-            .child('Products/$productId')
-            .get();
+        final productSnapshot =
+            await _databaseRef.child('Products/$productId').get();
 
         if (productSnapshot.exists) {
-          final productData = Map<String, dynamic>.from(
-              productSnapshot.value as Map);
+          final productData =
+              Map<String, dynamic>.from(productSnapshot.value as Map);
           final product = Product.fromMap(productData, productId);
-          orderItemsData.add(
-              OrderItemData(orderProduct: orderProduct, product: product));
+          orderItemsData
+              .add(OrderItemData(orderProduct: orderProduct, product: product));
         }
       }
 
@@ -369,8 +368,8 @@ class DatabaseService {
       if (ordersSnapshot.exists) {
         final orderProducts = <OrderProduct>[];
         for (final child in ordersSnapshot.children) {
-          final orderProductData = Map<String, dynamic>.from(
-              child.value as Map);
+          final orderProductData =
+              Map<String, dynamic>.from(child.value as Map);
           orderProducts.add(OrderProduct(
             date: orderProductData['date'] ?? '',
             uid: orderProductData['uid'] ?? '',
@@ -398,23 +397,22 @@ class DatabaseService {
       final userData = await _getUserDataById(uid);
       final userName = userData?.name;
 
-      final comments = await _getCommentForUser(
-          uid, userName!); // Use provided uid
+      final comments =
+          await _getCommentForUser(uid, userName!); // Use provided uid
       if (comments.isEmpty) return [];
 
       final assessmentItemsData = <AssessmentItemData>[];
       for (final comment in comments) {
         final productId = comment.productId;
-        final productSnapshot = await _databaseRef
-            .child('Products/$productId')
-            .get();
+        final productSnapshot =
+            await _databaseRef.child('Products/$productId').get();
 
         if (productSnapshot.exists) {
-          final productData = Map<String, dynamic>.from(
-              productSnapshot.value as Map);
+          final productData =
+              Map<String, dynamic>.from(productSnapshot.value as Map);
           final product = Product.fromMap(productData, productId);
-          assessmentItemsData.add(
-              AssessmentItemData(comment: comment, product: product));
+          assessmentItemsData
+              .add(AssessmentItemData(comment: comment, product: product));
         }
       }
 
@@ -425,8 +423,8 @@ class DatabaseService {
     }
   }
 
-  Future<List<CommentData>> _getCommentForUser(String uid,
-      String userName) async {
+  Future<List<CommentData>> _getCommentForUser(
+      String uid, String userName) async {
     try {
       final commentsSnapshot = await _databaseRef
           .child('Comments')
@@ -443,7 +441,7 @@ class DatabaseService {
             productId: commentData['productid']?.toInt() ?? 0,
             rate: (commentData['rate'] as num?)?.toDouble() ?? 0.0,
             title: commentData['title'] ?? '',
-            image: commentData['image']?.toString(),
+            image: commentData['image'].toString(),
           ));
         }
         return comments;
@@ -475,8 +473,24 @@ class DatabaseService {
     }
   }
 
-  Future<void> addComment(String title, int productId, double rate,
-      String image) async {
+  Future<String?> uploadImageToStorage(File imageFile) async {
+    try {
+      String fileName = File(imageFile.path).uri.pathSegments.last;
+      final ref = _storageRef.child(
+          'comment_images/$fileName'); // Store images in a dedicated folder
+
+      final uploadTask = ref.putFile(imageFile);
+      final snapshot = await uploadTask;
+      String downloadURL = await snapshot.ref.getDownloadURL();
+      return downloadURL;
+    } catch (e) {
+      print('Error uploading image: $e');
+      return null; // Return null in case of error
+    }
+  }
+
+  Future<void> addComment(
+      String title, int productId, double rate, String image) async {
     try {
       final uid = _auth.currentUser?.uid;
       if (uid == null) {
@@ -484,25 +498,15 @@ class DatabaseService {
       }
 
       final commentsRef = _databaseRef.child('Comments');
-      final newCommentKey = commentsRef
-          .push()
-          .key;
-      if (image.isNotEmpty) {
-        await commentsRef.child(newCommentKey!).set({
-          'uid': uid,
-          'productid': productId,
-          'rate': rate,
-          'title': title,
-          'image': image,
-        });
-      } else {
-        await commentsRef.child(newCommentKey!).set({
-          'uid': uid,
-          'productid': productId,
-          'rate': rate,
-          'title': title,
-        });
-      }
+      final newCommentKey = commentsRef.push().key;
+
+      await commentsRef.child(newCommentKey!).set({
+        'uid': uid,
+        'productid': productId,
+        'rate': rate,
+        'title': title,
+        'image': image,
+      });
 
       Fluttertoast.showToast(
         msg: 'Send comment Successfully!',
@@ -534,15 +538,15 @@ class DatabaseService {
         for (final child in addressesSnapshot.children) {
           final addressData = Map<String, dynamic>.from(child.value as Map);
           addresses.add(Address(
-              id: child.key!.toString(),
-              name: addressData['name'] ?? '',
-              phone: addressData['phone'] ?? '',
-              address: addressData['address'] ?? '',
-              isDefault: addressData['isDefault'] ?? false,)
-          );
+            id: child.key!.toString(),
+            name: addressData['name'] ?? '',
+            phone: addressData['phone'] ?? '',
+            address: addressData['address'] ?? '',
+            isDefault: addressData['isDefault'] ?? false,
+          ));
         }
         return addresses;
-      } else{
+      } else {
         return [];
       }
     } catch (e) {
@@ -588,7 +592,6 @@ class DatabaseService {
     }
   }
 
-
   Future<void> _resetDefaultAddresses(String uid) async {
     try {
       final addressRef = _databaseRef.child('Address');
@@ -607,8 +610,8 @@ class DatabaseService {
     }
   }
 
-  Future<void> addAddress(String name, String phone, String address,
-      bool isDefault) async {
+  Future<void> addAddress(
+      String name, String phone, String address, bool isDefault) async {
     try {
       final uid = _auth.currentUser?.uid;
       if (uid == null) {
@@ -620,9 +623,7 @@ class DatabaseService {
       }
 
       final addressRef = _databaseRef.child('Address');
-      final newAddressKey = addressRef
-          .push()
-          .key;
+      final newAddressKey = addressRef.push().key;
       await addressRef.child(newAddressKey!).set({
         'uid': uid,
         'name': name,
@@ -644,5 +645,4 @@ class DatabaseService {
       rethrow;
     }
   }
-
 }

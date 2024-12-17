@@ -148,7 +148,7 @@ class AssessmentItem extends StatelessWidget {
                 Row(
                   children: [
                     SizedBox(width: 60,),
-                    if (assessment.comment.image != null)
+                    if (assessment.comment.image != '')
                       ClipRRect(
                           borderRadius: BorderRadius.circular(10.0),
                           child: CachedNetworkImage(

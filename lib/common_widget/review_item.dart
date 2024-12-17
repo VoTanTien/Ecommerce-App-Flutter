@@ -72,7 +72,7 @@ class ReviewItem extends StatelessWidget{
                 fontWeight: FontWeight.w500,
                 color: Colors.white,),
             ),
-            if (image != null)
+            if (image != '')
               ClipRRect(
                 borderRadius: BorderRadius.circular(10.0),
                 child: CachedNetworkImage(

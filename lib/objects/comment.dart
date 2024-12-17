@@ -3,13 +3,13 @@ class CommentData {
   int productId;
   double rate;
   String title;
-  String? image;
+  String image;
 
   CommentData({
     required this.userName,
     required this.productId,
     required this.rate,
     required this.title,
-    this.image
+    required this.image
   });
 }

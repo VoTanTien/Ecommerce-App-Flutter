@@ -18,6 +18,7 @@ class _assessmentScreenState extends State<assessmentScreen> {
   bool isClickAll = true;
   bool isClickNewest = false;
   List<AssessmentItemData> _assessmentItems = [];
+  List<AssessmentItemData> _filteredAssessmentItems = [];
 
   @override
   void initState() {
@@ -28,8 +29,18 @@ class _assessmentScreenState extends State<assessmentScreen> {
   Future<void> _loadAssessmentItems() async {
     final assessmentItems = await DatabaseService().getAssessmentItems();
     setState(() {
-      _assessmentItems = assessmentItems;
+      _assessmentItems = List.from(assessmentItems);
+      _filteredAssessmentItems = _assessmentItems;
     });
+  }
+  void _sortAssessment() {
+    if (isClickNewest)
+    {
+      _filteredAssessmentItems = List.from(_assessmentItems.reversed);
+    } else if (isClickAll)
+    {
+      _filteredAssessmentItems = _assessmentItems;
+    }
   }
   
   @override
@@ -72,6 +83,7 @@ class _assessmentScreenState extends State<assessmentScreen> {
                           setState(() {
                             isClickAll = true;
                             isClickNewest = false;
+                            _sortAssessment();
                           });
                         },
                         child: Text(
@@ -101,11 +113,11 @@ class _assessmentScreenState extends State<assessmentScreen> {
                           setState(() {
                             isClickAll = false;
                             isClickNewest = true;
+                            _sortAssessment();
                           });
                         },
                         child: Text(
                           'Newest',
-
                           style: GoogleFonts.inter(
                               fontSize: 14,
                               color: Colors.white,
@@ -121,7 +133,7 @@ class _assessmentScreenState extends State<assessmentScreen> {
                 Wrap(
                   spacing: 0,
                   runSpacing: 10,
-                  children: _assessmentItems.map((e) {
+                  children: _filteredAssessmentItems.map((e) {
                     return AssessmentItem(assessment: e,);
                   }).toList()
                 ),
