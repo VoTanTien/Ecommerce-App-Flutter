@@ -6,7 +6,13 @@ import 'package:flutter/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:t_t_project/screens/home.dart';
 import 'package:t_t_project/screens/loginscreens/login.dart';
+import 'package:t_t_project/services/database_service.dart';
 import '../screens/loginscreens/start.dart';
+
+import 'dart:convert';
+import 'dart:math';
+import 'package:crypto/crypto.dart';
+import 'package:sha3/sha3.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -19,6 +25,7 @@ class AuthService {
     required String password,
     required String name,
     required String phone,
+    // required String PIN,
     required BuildContext context,
   }) async {
     try {
@@ -26,17 +33,22 @@ class AuthService {
         email: email,
         password: password,
       );
-
       String uid = userCredential.user!.uid;
+      String PIN = '040302';
+      String address = "123 street A, District B, TPHCM";
+      final salt = generateSalt(16);
+
+      final hashedPIN = hashPIN(PIN, salt);
       await _databaseRef.child('Users').child(uid).set({
         'email': email,
         'uid': uid,
         'name': name,
         'phone': phone,
-        // It's generally not recommended to store passwords directly.
-        // Consider storing a password hash instead if you absolutely need to.
-        // 'password': password,  //REMOVE THIS - DO NOT STORE PASSWORDS IN PLAIN TEXT
+        'salt': salt,
+        'hashedPIN': hashedPIN,
       });
+
+      DatabaseService().addNewAddress(uid, name, phone, address, true);
 
       Fluttertoast.showToast(
         msg: 'Sign up successfully',
@@ -68,6 +80,19 @@ class AuthService {
     }
     catch (e) {
     }
+  }
+
+  String generateSalt(int length) {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    final random = Random.secure();
+    return List.generate(length, (index) => chars[random.nextInt(chars.length)])
+        .join();
+  }
+
+  String hashPIN(String PIN, String salt) {
+    final k = SHA3(256, SHA3_PADDING, 256);
+    k.update(utf8.encode(PIN + salt));
+    return k.digest().map((e) => e.toRadixString(16).padLeft(2, '0')).join();
   }
 
   Future<void> signin({

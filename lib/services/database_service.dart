@@ -37,6 +37,8 @@ class DatabaseService {
           'name': data['name'] ?? '',
           'email': data['email'] ?? '',
           'phone': data['phone'] ?? '',
+          'salt': data['salt'] ?? '',
+          'hashedPIN': data['hashedPIN'] ?? '',
         };
       } else {
         throw Exception("User data not found");
@@ -640,6 +642,33 @@ class DatabaseService {
         textColor: Colors.white,
         fontSize: 16,
       );
+    } catch (e) {
+      print("Error adding address: $e");
+      rethrow;
+    }
+  }
+
+  Future<void> addNewAddress(
+      String uid, String name, String phone, String address, bool isDefault) async {
+    try {
+      final addressRef = _databaseRef.child('Address');
+      final newAddressKey = addressRef.push().key;
+      await addressRef.child(newAddressKey!).set({
+        'uid': uid,
+        'name': name,
+        'phone': phone,
+        'address': address,
+        'isDefault': isDefault,
+      });
+
+      // Fluttertoast.showToast(
+      //   msg: 'Add new address successfully!',
+      //   toastLength: Toast.LENGTH_LONG,
+      //   gravity: ToastGravity.SNACKBAR,
+      //   backgroundColor: Colors.black54,
+      //   textColor: Colors.white,
+      //   fontSize: 16,
+      // );
     } catch (e) {
       print("Error adding address: $e");
       rethrow;

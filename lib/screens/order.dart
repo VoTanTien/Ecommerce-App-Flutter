@@ -8,10 +8,12 @@ import 'package:t_t_project/constants/image_strings.dart';
 import 'package:t_t_project/objects/address.dart';
 import 'package:t_t_project/screens/choose_address.dart';
 import 'package:t_t_project/screens/order.dart';
+import 'package:t_t_project/screens/pin_entry.dart';
 import 'package:t_t_project/screens/success.dart';
 
 import '../objects/cart_item_data.dart';
 import '../services/database_service.dart';
+import 'otp.dart';
 
 class orderScreen extends StatefulWidget {
   final List<CartItemData> cartItems; // Receive cartItems
@@ -27,12 +29,16 @@ class _orderScreenState extends State<orderScreen> {
   int productPrice = 0;
   int total = 0;
   Address? _selectedAddress;
+  bool checkCodmethod = true;
+  bool checkCreditmethod = false;
+  String phone = '+84379743117';
 
   @override
   void initState() {
     super.initState();
     _calculateTotal();
     _loadDefaultAddress();
+    // _loadUserData();
   }
 
   Future<void> _loadDefaultAddress() async {
@@ -43,6 +49,21 @@ class _orderScreenState extends State<orderScreen> {
       });
     } catch (e) {
       print('Error load address: $e');
+    }
+  }
+
+  Future<void> _loadUserData() async {
+    final databaseService = DatabaseService();
+    try {
+      final userData = await databaseService.getUserData();
+      setState(() {
+        phone = userData['phone']!;
+      });
+    } catch (e) {
+      // Handle error, for example by showing a Snackbar
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Failed to load user data")),
+      );
     }
   }
 
@@ -143,7 +164,8 @@ class _orderScreenState extends State<orderScreen> {
                               size: 35,
                             ),
                             onTap: () async {
-                              final selectedAddress = await Navigator.push<Address>(
+                              final selectedAddress =
+                                  await Navigator.push<Address>(
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => AddressScreen(
@@ -181,7 +203,90 @@ class _orderScreenState extends State<orderScreen> {
                       height: 10,
                     ),
                     // display Payment Method
-                    PaymentMethod(),
+                    Card(
+                      color: greyColor,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15)),
+                      child: Column(
+                        children: [
+                          ListTile(
+                            title: Text('Payment method',
+                                style: GoogleFonts.inter(
+                                  fontSize: 16,
+                                  color: Colors.white,
+                                )),
+                            leading: Icon(
+                              Icons.monetization_on_outlined,
+                              color: Colors.white,
+                            ),
+                          ),
+                          Row(
+                            children: [
+                              SizedBox(
+                                width: 15,
+                              ),
+                              Checkbox(
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(100)),
+                                  side:
+                                      BorderSide(color: Colors.white, width: 2),
+                                  activeColor: redColor,
+                                  value: checkCodmethod,
+                                  onChanged: (bool? value) {
+                                    setState(() {
+                                      checkCreditmethod = false;
+                                      checkCodmethod = value!;
+                                    });
+                                  }),
+                              Icon(
+                                Icons.local_shipping_outlined,
+                                color: Colors.white,
+                              ),
+                              SizedBox(
+                                width: 5,
+                              ),
+                              Text('Cash on delivery',
+                                  style: GoogleFonts.inter(
+                                    fontSize: 14,
+                                    color: Colors.white,
+                                  )),
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              SizedBox(
+                                width: 15,
+                              ),
+                              Checkbox(
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(100)),
+                                  side:
+                                      BorderSide(color: Colors.white, width: 2),
+                                  activeColor: redColor,
+                                  value: checkCreditmethod,
+                                  onChanged: (bool? value) {
+                                    setState(() {
+                                      checkCodmethod = false;
+                                      checkCreditmethod = value!;
+                                    });
+                                  }),
+                              Icon(
+                                Icons.credit_card,
+                                color: Colors.white,
+                              ),
+                              SizedBox(
+                                width: 5,
+                              ),
+                              Text('Pay by credit card',
+                                  style: GoogleFonts.inter(
+                                    fontSize: 14,
+                                    color: Colors.white,
+                                  )),
+                            ],
+                          )
+                        ],
+                      ),
+                    ),
                     SizedBox(
                       height: 10,
                     ),
@@ -241,19 +346,32 @@ class _orderScreenState extends State<orderScreen> {
                           ),
                         ),
                         onPressed: () async {
-                          try {
-                            await DatabaseService()
-                                .createOrdersFromCart(widget.cartItems, _selectedAddress!.id);
+                          if (checkCreditmethod) {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => successScreen()),
+                                  builder: (context) => OtpScreen(phone: phone,)),
                             );
-                          } catch (e) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                  content: Text('Error creating order: $e')),
-                            );
+                            // Navigator.push(
+                            //   context,
+                            //   MaterialPageRoute(
+                            //       builder: (context) => PinEntryScreen()),
+                            // );
+                          } else {
+                            try {
+                              await DatabaseService().createOrdersFromCart(
+                                  widget.cartItems, _selectedAddress!.id);
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => successScreen()),
+                              );
+                            } catch (e) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                    content: Text('Error creating order: $e')),
+                              );
+                            }
                           }
                         },
                         child: Text(
@@ -373,80 +491,6 @@ class _PaymentMethodState extends State<PaymentMethod> {
 }
 
 //---------------
-class AddressField extends StatefulWidget {
-  final Address defaultAddress;
-
-  const AddressField({
-    Key? key,
-    required this.defaultAddress,
-  }) : super(key: key);
-
-  @override
-  State<AddressField> createState() => _AddressFieldState();
-}
-
-class _AddressFieldState extends State<AddressField> {
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      title: Text('Delivery address',
-          style: GoogleFonts.inter(
-            fontSize: 22,
-            color: Colors.white,
-          )),
-      subtitle: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          IntrinsicHeight(
-            child: Row(
-              children: [
-                Text(
-                  widget.defaultAddress.name,
-                  style: GoogleFonts.inter(
-                    fontSize: 14,
-                    color: Colors.white,
-                  ),
-                ),
-                VerticalDivider(
-                  color: Colors.white,
-                  thickness: 1,
-                  width: 15,
-                ),
-                Text(
-                  widget.defaultAddress.phone,
-                  style: GoogleFonts.inter(
-                    fontSize: 14,
-                    color: Colors.white,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Text(
-            widget.defaultAddress.address,
-            style: GoogleFonts.inter(
-              fontSize: 14,
-              color: Colors.white,
-            ),
-          ),
-        ],
-      ),
-      trailing: Icon(
-        Icons.arrow_forward_ios_rounded,
-        color: Colors.white,
-      ),
-      leading: Icon(
-        Icons.location_on_outlined,
-        color: Colors.white,
-        size: 35,
-      ),
-      onTap: () {
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => AddressScreen()));
-      },
-    );
-  }
-}
 
 //---------------
 class PaymentDetail extends StatelessWidget {

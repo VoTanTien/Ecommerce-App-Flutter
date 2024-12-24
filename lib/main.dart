@@ -7,6 +7,8 @@ import 'package:t_t_project/screens/loginscreens/login.dart';
 import 'package:t_t_project/screens/loginscreens/start.dart';
 import 'package:t_t_project/screens/new_address.dart';
 import 'package:t_t_project/screens/order.dart';
+import 'package:t_t_project/screens/otp.dart';
+import 'package:t_t_project/screens/pin_entry.dart';
 import 'package:t_t_project/screens/product_detail.dart';
 import 'package:t_t_project/screens/success.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -32,6 +34,8 @@ void main() async {
               }
               if(snapshot.hasData){
                 return homeScreen();
+                // return PinEntryScreen();
+                // return OtpScreen(phone: '+84379743117',);
               }
               return loginScreen();
             },
