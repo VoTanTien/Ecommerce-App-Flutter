@@ -10,6 +10,9 @@ import '../services/database_service.dart';
 import 'otp.dart';
 
 class PinEntryScreen extends StatefulWidget {
+  final multiFactor;
+  final isTrusted;
+  const PinEntryScreen({Key? key, required this.multiFactor, required this.isTrusted}) : super(key: key);
   @override
   _PinEntryScreenState createState() => _PinEntryScreenState();
 }
@@ -40,21 +43,20 @@ class _PinEntryScreenState extends State<PinEntryScreen> {
     final userData = await databaseService.getUserData();
     final storedSalt = userData['salt'];
     final storedHashedPIN = userData['hashedPIN'];
-    bool isFamiliar = true;
 
     // Hash the entered PIN with the stored salt
     print('Entered PIN: $pin');
     final enteredHashedPIN = hashPIN(pin, storedSalt!);
 
     if (enteredHashedPIN == storedHashedPIN) {
-      isFamiliar ? Navigator.push(
+      widget.multiFactor ? Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) => successScreen()),
+            builder: (context) => OtpScreen(phone: phone, isTrusted: widget.isTrusted,)),
       ) : Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) => OtpScreen(phone: phone,)),
+            builder: (context) => successScreen(isTrusted: widget.isTrusted,)),
       );
     } else {
       setState(() {
@@ -69,6 +71,8 @@ class _PinEntryScreenState extends State<PinEntryScreen> {
       // );
     }
   }
+
+
 
   void _lockUser() {
     print('User locked due to too many failed attempts');

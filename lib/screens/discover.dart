@@ -1,4 +1,4 @@
-import 'package:carousel_slider/carousel_slider.dart';
+import 'package:carousel_slider/carousel_slider.dart'as slider_controller;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -73,9 +73,9 @@ class _discoverScreenState extends State<discoverScreen> {
                 SizedBox(
                   height: 10,
                 ),
-                CarouselSlider(
+                slider_controller.CarouselSlider(
                   items: myimages,
-                  options: CarouselOptions(
+                  options: slider_controller.CarouselOptions(
                       height: 185,
                       autoPlay: true,
                       autoPlayCurve: Curves.fastOutSlowIn,

@@ -11,8 +11,8 @@ import '../services/database_service.dart';
 
 class OtpScreen extends StatefulWidget {
   final phone;
-
-  const OtpScreen({Key? key, required this.phone}) : super(key: key);
+  final isTrusted;
+  const OtpScreen({Key? key, required this.phone, required this.isTrusted}) : super(key: key);
 
   @override
   _OtpScreenState createState() => _OtpScreenState();
@@ -217,7 +217,7 @@ class _OtpScreenState extends State<OtpScreen> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => successScreen()),
+                              builder: (context) => successScreen(isTrusted: widget.isTrusted,)),
                         );
                       } else {
                         setState(() {

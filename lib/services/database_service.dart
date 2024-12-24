@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -671,6 +672,51 @@ class DatabaseService {
       // );
     } catch (e) {
       print("Error adding address: $e");
+      rethrow;
+    }
+  }
+
+  Future<bool> isDeviceTrusted(String deviceId) async {
+    try {
+      final uid = _auth.currentUser?.uid;
+      String replaceDeviceId = deviceId.replaceAll('.', '_');
+      final ref = FirebaseDatabase.instance.ref(
+          "Users/$uid/devices/$replaceDeviceId");
+      final snapshot = await ref.get();
+      return snapshot.exists;
+    } catch (e) {
+      print("Error get device: $e");
+      rethrow;
+    }
+  }
+
+  Future<void> saveDevice() async {
+    try {
+      final uid = _auth.currentUser?.uid;
+      if (uid == null) {
+        return;
+      }
+      final deviceInfo = DeviceInfoPlugin();
+      final androidInfo = await deviceInfo.androidInfo;
+      String replaceDeviceId = androidInfo.id.replaceAll('.', '_');
+      final ref = FirebaseDatabase.instance.ref(
+          "Users/$uid/devices/$replaceDeviceId");
+      await ref.set({
+        'deviceName': androidInfo.model,
+        'addedOn': DateTime
+            .now()
+            .millisecondsSinceEpoch,
+      });
+      Fluttertoast.showToast(
+        msg: 'Add new device successfully!',
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.SNACKBAR,
+        backgroundColor: Colors.black54,
+        textColor: Colors.white,
+        fontSize: 16,
+      );
+    } catch (e) {
+      print("Error save device: $e");
       rethrow;
     }
   }

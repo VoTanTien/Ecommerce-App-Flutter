@@ -10,6 +10,7 @@ import 'package:t_t_project/screens/choose_address.dart';
 import 'package:t_t_project/screens/order.dart';
 import 'package:t_t_project/screens/pin_entry.dart';
 import 'package:t_t_project/screens/success.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 
 import '../objects/cart_item_data.dart';
 import '../services/database_service.dart';
@@ -29,9 +30,11 @@ class _orderScreenState extends State<orderScreen> {
   int productPrice = 0;
   int total = 0;
   Address? _selectedAddress;
-  bool checkCodmethod = true;
-  bool checkCreditmethod = false;
+  bool checkCodmethod = false;
+  bool checkCreditmethod = true;
+  DatabaseService databaseService = DatabaseService();
   String phone = '+84379743117';
+  String uid = '' ;
 
   @override
   void initState() {
@@ -53,12 +56,10 @@ class _orderScreenState extends State<orderScreen> {
   }
 
   Future<void> _loadUserData() async {
-    final databaseService = DatabaseService();
+    final authService = DatabaseService();
     try {
       final userData = await databaseService.getUserData();
-      setState(() {
-        phone = userData['phone']!;
-      });
+        uid = userData['uid']!;
     } catch (e) {
       // Handle error, for example by showing a Snackbar
       ScaffoldMessenger.of(context).showSnackBar(
@@ -80,6 +81,40 @@ class _orderScreenState extends State<orderScreen> {
       total = productPrice + shipFee; // Calculate total price
     });
   }
+
+  Future<String> getDeviceId() async {
+    DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+    AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+    print('Running on ${androidInfo.model}');
+    return androidInfo.id;
+    // IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
+    // print('Running on ${iosInfo.utsname.machine}');
+  }
+
+  Future<void> handlePayment() async {
+    final deviceId = await getDeviceId();
+
+    // Kiểm tra thiết bị có thân quen không
+    final isTrusted = await databaseService.isDeviceTrusted(deviceId);
+    bool multiFactor;
+    if (!isTrusted || total > 30) {
+      multiFactor = true;
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => PinEntryScreen(multiFactor: multiFactor, isTrusted: isTrusted,)),
+      );
+    } else {
+      multiFactor = false;
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => PinEntryScreen(multiFactor: multiFactor, isTrusted: isTrusted,)),
+      );
+    }
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -347,16 +382,7 @@ class _orderScreenState extends State<orderScreen> {
                         ),
                         onPressed: () async {
                           if (checkCreditmethod) {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => OtpScreen(phone: phone,)),
-                            );
-                            // Navigator.push(
-                            //   context,
-                            //   MaterialPageRoute(
-                            //       builder: (context) => PinEntryScreen()),
-                            // );
+                            handlePayment();
                           } else {
                             try {
                               await DatabaseService().createOrdersFromCart(
@@ -364,7 +390,7 @@ class _orderScreenState extends State<orderScreen> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => successScreen()),
+                                    builder: (context) => successScreen(isTrusted: true,)),
                               );
                             } catch (e) {
                               ScaffoldMessenger.of(context).showSnackBar(

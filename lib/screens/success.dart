@@ -4,8 +4,54 @@ import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:t_t_project/constants/colors.dart';
 import 'package:t_t_project/screens/home.dart';
+import 'package:t_t_project/services/database_service.dart';
 
-class successScreen extends StatelessWidget{
+class successScreen extends StatefulWidget{
+  final isTrusted;
+  const successScreen({Key? key, required this.isTrusted}) : super(key: key);
+
+  @override
+  State<successScreen> createState() => _successScreenState();
+}
+
+class _successScreenState extends State<successScreen> {
+
+  @override
+  void initState() {
+    super.initState();
+    saveFamiliarDevice();
+  }
+
+  void saveFamiliarDevice(){
+    if (!widget.isTrusted){
+      showSaveDeviceDialog(context);
+    }
+  }
+
+  void showSaveDeviceDialog(
+      BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text("Save Device?"),
+        content: Text("Do you want to save this device as a familiar device?"),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context), // Không lưu
+            child: Text("No"),
+          ),
+          TextButton(
+            onPressed: () async {
+              await DatabaseService().saveDevice();
+              Navigator.pop(context);
+            },
+            child: Text("Yes"),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -44,7 +90,7 @@ class successScreen extends StatelessWidget{
                           ),
                         ),
                         onPressed: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (cntext) => homeScreen()));
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => homeScreen()));
                         },
                         child: Text(
                           'HOME',
@@ -63,5 +109,4 @@ class successScreen extends StatelessWidget{
         ),
     );
   }
-
 }
